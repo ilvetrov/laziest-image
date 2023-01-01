@@ -7,11 +7,13 @@ export type Destroyer = () => void
 
 function watchVirtualImage(props: {
   onChange(newSrc: string): void
+  initialSrc?: string
   virtualImage: HTMLImageElement
 }): Destroyer
 
 function watchVirtualImage(props: {
   onChange(newSrc: string): void
+  initialSrc?: string
   src: string
   srcSet?: string
   sizes?: string
@@ -19,12 +21,13 @@ function watchVirtualImage(props: {
 
 function watchVirtualImage(props: {
   onChange(newSrc: string): void
+  initialSrc?: string
   virtualImage?: HTMLImageElement
   src?: string
   srcSet?: string
   sizes?: string
 }): Destroyer {
-  let lastSrc: string | undefined
+  let lastSrc: string | undefined = props.initialSrc
 
   const pureHandlers = new PureHandlers()
 

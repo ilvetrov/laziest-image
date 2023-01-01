@@ -84,13 +84,7 @@ export default function useLazyImage(rawProps: ImagePropsForHook): {
 
   currentOutputSrc.current = outputSrc
 
-  const [virtualImage, setVirtualImage] = useState<HTMLImageElement>()
-
-  useWatchVirtualImage({
-    doNotRun: !props.watchForVirtualImage || !virtualImage || !props.sizes || !props.srcSet,
-    onChange: (newSrc) => setOutputSrc(newSrc),
-    virtualImage,
-  })
+  const setVirtualImage = useWatchVirtualImage((newSrc) => setOutputSrc(newSrc))
 
   useEffect(() => {
     if (props.withBrowserLazyLoading && !browserSupportsLazyLoading) {
@@ -136,7 +130,7 @@ export default function useLazyImage(rawProps: ImagePropsForHook): {
             setOutputSrc(loadedSrc)
 
             if (props.watchForVirtualImage && props.sizes && props.srcSet) {
-              setVirtualImage(newVirtualImage)
+              setVirtualImage(newVirtualImage, loadedSrc)
             }
           }
         })

@@ -1,51 +1,38 @@
-import { useEffect } from 'react'
+import { usePureHandlers } from 'pure-handlers/react'
+import { useCallback, useEffect, useRef } from 'react'
 import watchVirtualImage from '../core/watchVirtualImage'
 import useEvent from './useEvent'
 
-function useWatchVirtualImage(props: {
-  onChange(newSrc: string): void
-  doNotRun?: boolean
-  virtualImage?: HTMLImageElement
-})
+export type SetVirtualImage = (newVirtualImage: HTMLImageElement, initalSrc: string) => void
 
-function useWatchVirtualImage(props: {
-  onChange(newSrc: string): void
-  doNotRun?: boolean
-  src: string
-  srcSet?: string
-  sizes?: string
-})
+function useWatchVirtualImage(onChangeRaw: (newSrc: string) => void): SetVirtualImage {
+  const onChange = useEvent(onChangeRaw)
+  const virtualImage = useRef<HTMLImageElement>()
+  const pureHandlers = usePureHandlers()
 
-function useWatchVirtualImage(props: {
-  onChange(newSrc: string): void
-  doNotRun?: boolean
-  virtualImage?: HTMLImageElement
-  src?: string
-  srcSet?: string
-  sizes?: string
-}) {
-  const onChange = useEvent(props.onChange)
+  const setVirtualImage: SetVirtualImage = useCallback((newVirtualImage, initialSrc) => {
+    virtualImage.current = newVirtualImage
+    addVirtualImageToWatcher(initialSrc)
+  }, [])
+
+  const addVirtualImageToWatcher = (initialSrc?: string) => {
+    if (!virtualImage.current) {
+      return undefined
+    }
+
+    pureHandlers.destroy()
+    pureHandlers.addDestroyer(
+      watchVirtualImage({ onChange, virtualImage: virtualImage.current, initialSrc }),
+    )
+  }
 
   useEffect(() => {
-    if (props.doNotRun) {
-      return undefined
-    }
+    addVirtualImageToWatcher()
 
-    if (props.virtualImage) {
-      return watchVirtualImage({ onChange, virtualImage: props.virtualImage })
-    }
+    return pureHandlers.destroy()
+  }, [])
 
-    if (!props.src) {
-      return undefined
-    }
-
-    return watchVirtualImage({
-      onChange,
-      src: props.src,
-      srcSet: props.srcSet,
-      sizes: props.sizes,
-    })
-  }, [props.src, props.srcSet, props.sizes, props.virtualImage, props.doNotRun])
+  return setVirtualImage
 }
 
 export default useWatchVirtualImage
