@@ -5,8 +5,15 @@ export default function preloadImage(props: { src: string; srcSet?: string; size
 } {
   const virtualImage = new Image()
 
+  virtualImage.decoding = 'async'
+
   const promiseLoad = new Promise<string>((resolve, reject) => {
-    virtualImage.addEventListener('load', () => resolve(virtualImage.currentSrc))
+    virtualImage.addEventListener('load', () => {
+      virtualImage
+        .decode()
+        .then(() => resolve(virtualImage.currentSrc))
+        .catch(() => reject())
+    })
     ;['abort', 'error', 'suspend'].forEach((eventName) => {
       virtualImage.addEventListener(eventName, () => reject())
     })

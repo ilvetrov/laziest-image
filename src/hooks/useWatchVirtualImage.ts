@@ -1,7 +1,7 @@
 import { usePureHandlers } from 'pure-handlers/react'
 import { useCallback, useEffect, useRef } from 'react'
 import watchVirtualImage from '../core/watchVirtualImage'
-import useEvent from './useEvent'
+import { useEvent } from './useEvent'
 
 export type SetVirtualImage = (newVirtualImage: HTMLImageElement, initalSrc: string) => void
 

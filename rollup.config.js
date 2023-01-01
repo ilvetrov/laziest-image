@@ -13,7 +13,7 @@ export default [
       },
     ],
     plugins: [typescript({ exclude: ['**.test.ts', '**.test.tsx'] }), cleanup()],
-    external: ['react', 'react-dom', 'pure-handlers'],
+    external: ['react', 'react-dom', 'pure-handlers', 'pure-handlers/react'],
   },
   {
     input: 'src/index.ts',
@@ -25,6 +25,6 @@ export default [
       },
     ],
     plugins: [typescript({ declaration: false }), cleanup()],
-    external: ['react', 'react-dom', 'pure-handlers'],
+    external: ['react', 'react-dom', 'pure-handlers', 'pure-handlers/react'],
   },
 ]
