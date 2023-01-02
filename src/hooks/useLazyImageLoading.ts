@@ -1,5 +1,5 @@
 import { usePureHandlers } from 'pure-handlers/react'
-import { MutableRefObject, useEffect, useRef, useState } from 'react'
+import { MutableRefObject, useEffect, useState } from 'react'
 import { browserSupportsLazyLoading } from '../core/browserSupportsLazyLoading'
 import checkVisibility from '../core/checkVisibility'
 import { ImageProps, ImagePropsWithDefault } from '../core/ImageProps'
@@ -12,12 +12,14 @@ export default function useLazyImageLoading(
   ref: MutableRefObject<HTMLElement | null>,
   props: ImagePropsWithDefault<ImageProps>,
 ): {
-  loaded: MutableRefObject<boolean>
+  loaded: boolean
   outputSrc: string
   cancelLoading: () => void
 } {
-  const [outputSrc, setOutputSrc] = useState(props.withBrowserLazyLoading ? props.src : '')
-  const loaded = useRef(props.withBrowserLazyLoading || false)
+  const [{ loaded, outputSrc }, setImageInfo] = useState({
+    outputSrc: props.withBrowserLazyLoading ? props.src : '',
+    loaded: props.withBrowserLazyLoading || false,
+  })
 
   const loadingHandlers = usePureHandlers()
 
@@ -27,7 +29,7 @@ export default function useLazyImageLoading(
 
   const setVirtualImage = useWatchVirtualImage((newSrc) => {
     if (props.watchForVirtualImage) {
-      setOutputSrc(newSrc)
+      setImageInfo((oldInfo) => ({ ...oldInfo, outputSrc: newSrc }))
 
       onLoadOptional(newSrc)
       onSrcSetChangeOptional(newSrc)
@@ -36,17 +38,12 @@ export default function useLazyImageLoading(
 
   useEffect(() => {
     if (props.withBrowserLazyLoading && !browserSupportsLazyLoading) {
-      setOutputSrc('')
-      loaded.current = false
+      setImageInfo(() => ({ outputSrc: '', loaded: false }))
     }
   }, [])
 
   useEffect(() => {
-    if (
-      !props.load ||
-      loaded.current ||
-      (props.withBrowserLazyLoading && browserSupportsLazyLoading)
-    ) {
+    if (!props.load || loaded || (props.withBrowserLazyLoading && browserSupportsLazyLoading)) {
       loadingHandlers.destroy()
 
       return undefined
@@ -74,8 +71,7 @@ export default function useLazyImageLoading(
       preloadingImage
         .then((loadedSrc) => {
           if (canSet) {
-            loaded.current = true
-            setOutputSrc(loadedSrc)
+            setImageInfo(() => ({ outputSrc: loadedSrc, loaded: true }))
 
             onLoadOptional(loadedSrc)
             onFirstLoadOptional(loadedSrc)

@@ -23,5 +23,5 @@ export default function useLazyImage(rawProps: ImagePropsForHook): {
     return { loadedSrc: blank || '', loaded: false }
   }
 
-  return { loadedSrc: outputSrc || blank || '', loaded: loaded.current }
+  return { loadedSrc: outputSrc || blank || '', loaded }
 }
