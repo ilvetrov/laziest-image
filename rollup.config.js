@@ -2,7 +2,8 @@ import typescript from '@rollup/plugin-typescript'
 import cleanup from 'rollup-plugin-cleanup'
 import pkg from './package.json'
 
-export default [
+/** @type {import('rollup').RollupOptions[]} */
+const config = [
   {
     input: 'src/index.ts',
     output: [
@@ -12,7 +13,7 @@ export default [
         exports: 'named',
       },
     ],
-    plugins: [typescript({ exclude: ['**.test.ts', '**.test.tsx'] }), cleanup()],
+    plugins: [typescript({ exclude: ['**.test.ts', '**.test.tsx', 'src/sizes/**'] }), cleanup()],
     external: ['react', 'react-dom', 'pure-handlers', 'pure-handlers/react'],
   },
   {
@@ -28,3 +29,5 @@ export default [
     external: ['react', 'react-dom', 'pure-handlers', 'pure-handlers/react'],
   },
 ]
+
+export default config
