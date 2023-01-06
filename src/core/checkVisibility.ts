@@ -1,10 +1,11 @@
+import { defaultImageProps } from './ImageProps'
 import { getWindowHeight } from './optimized-inner-height'
 import { getWindowWidth } from './optimized-inner-width'
 
 export default function checkVisibility(
   element: Element,
-  yOffset = 800,
-  xOffset: number | 'any' = 0,
+  yOffset: number = defaultImageProps.yOffset,
+  xOffset: number | 'any' = defaultImageProps.xOffset,
 ): boolean {
   const position = element.getBoundingClientRect()
 

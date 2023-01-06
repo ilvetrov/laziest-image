@@ -1,6 +1,3 @@
-import setDefaultProps from './setDefaultProps'
-import { WithRequired } from './WithRequired'
-
 export interface ImageProps {
   src: string
   srcSet?: string
@@ -8,49 +5,73 @@ export interface ImageProps {
   width?: number | string
   height?: number | string
   /**
-   * @default 'auto'
+   * `undefined` — auto loading.
+   * `true` — load immediately.
+   * `false` — image will never load.
    */
-  load?: boolean | 'auto'
+  load?: boolean
+  onLoad?(src: string): void
+  onFirstLoad?(src: string): void
+  onSrcChange?(src: string): void
+  afterPageLoad?: boolean
+  customLoading?: CustomLoading
+}
+
+export const imagePropsKeys: (keyof ImageProps)[] = [
+  'src',
+  'srcSet',
+  'sizes',
+  'width',
+  'height',
+  'load',
+  'onLoad',
+  'onFirstLoad',
+  'onSrcChange',
+  'afterPageLoad',
+  'customLoading',
+]
+
+export interface CustomLoading {
   /**
-   * @default true
-   */
-  withBrowserLazyLoading?: boolean
-  /**
-   * Ignored if withBrowserLazyLoading is true.
    * @default 800
    */
   yOffset?: number
   /**
-   * Ignored if withBrowserLazyLoading is true.
    * @default 400
    */
   xOffset?: number | 'any'
-  doNotCreateBlank?: boolean
-  onLoad?(src: string): void
-  onFirstLoad?(src: string): void
-  onSrcSetChange?(src: string): void
-  watchForVirtualImage?: boolean
+  withoutBlank?: boolean
+  withoutWatchingSrcChange?: boolean
 }
 
-export type ImagePropsDefaultProps = {
-  load: 'auto'
-  yOffset: 800
-  xOffset: 400
-  withBrowserLazyLoading: true
+export interface ImageStatus {
+  readySrc: string
+  loaded: boolean
 }
 
-export type ImagePropsWithDefault<T extends ImageProps> = WithRequired<
-  T,
-  keyof ImagePropsDefaultProps
->
-
-export const defaultImageProps: ImagePropsDefaultProps = {
+export const defaultImageProps = {
   load: 'auto',
   yOffset: 800,
   xOffset: 400,
-  withBrowserLazyLoading: true,
 } as const
 
-export function setDefaultImageProps<T extends ImageProps>(props: T): ImagePropsWithDefault<T> {
-  return setDefaultProps(props, defaultImageProps)
+export type ImagePropsDefault = typeof defaultImageProps
+
+/**
+ * The function guarantees the constant order of dependencies
+ */
+export function getImagePropsToUpdateAll(props: ImageProps) {
+  return [
+    props.src,
+    props.srcSet,
+    props.sizes,
+    props.width,
+    props.height,
+    props.load,
+    props.afterPageLoad,
+    props.customLoading?.xOffset,
+    props.customLoading?.yOffset,
+    props.customLoading?.withoutBlank,
+    props.customLoading?.withoutWatchingSrcChange,
+  ]
 }

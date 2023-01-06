@@ -83,6 +83,7 @@
     "react hook"
   ],
   "dependencies": {
-    "pure-handlers": "^3.2.0"
+    "pure-handlers": "^3.2.0",
+    "use-effect-without-mount": "^1.0.1"
   }
 }

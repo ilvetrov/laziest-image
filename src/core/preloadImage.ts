@@ -1,23 +1,46 @@
-export default function preloadImage(props: { src: string; srcSet?: string; sizes?: string }): {
-  load: Promise<string>
-  cancelLoading: () => void
-  virtualImage: HTMLImageElement
-} {
+import PureHandlers from 'pure-handlers'
+
+type Destroy = () => void
+
+export default function preloadImage(props: {
+  src: string
+  srcSet?: string
+  sizes?: string
+  keepWatching?: boolean
+  onLoad(src: string): void
+  onError?(event: Event): void
+}): Destroy {
+  let destroyed = false
+
   const virtualImage = new Image()
+
+  const pureHandlers = new PureHandlers()
 
   virtualImage.decoding = 'async'
 
-  const promiseLoad = new Promise<string>((resolve, reject) => {
-    virtualImage.addEventListener('load', () => {
-      virtualImage
-        .decode()
-        .then(() => resolve(virtualImage.currentSrc))
-        .catch(() => reject())
-    })
-    ;['abort', 'error', 'suspend'].forEach((eventName) => {
-      virtualImage.addEventListener(eventName, () => reject())
-    })
+  pureHandlers.addEventListener(virtualImage, 'load', () => {
+    if (!destroyed) {
+      props.onLoad(virtualImage.currentSrc)
+
+      if (!props.keepWatching) {
+        pureHandlers.destroy()
+      }
+    }
   })
+
+  if (props.onError) {
+    ;['abort', 'error', 'suspend'].forEach((eventName) => {
+      pureHandlers.addEventListener(virtualImage, eventName, (event) => {
+        if (!destroyed && props.onError) {
+          props.onError(event)
+
+          if (!props.keepWatching) {
+            pureHandlers.destroy()
+          }
+        }
+      })
+    })
+  }
 
   if (props.srcSet) {
     virtualImage.srcset = props.srcSet
@@ -29,9 +52,11 @@ export default function preloadImage(props: { src: string; srcSet?: string; size
 
   virtualImage.src = props.src
 
-  return {
-    load: promiseLoad,
-    cancelLoading: () => (virtualImage.src = ''),
-    virtualImage,
+  return () => {
+    virtualImage.src = ''
+    virtualImage.srcset = ''
+    virtualImage.sizes = ''
+    destroyed = true
+    pureHandlers.destroy()
   }
 }

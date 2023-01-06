@@ -1,27 +1,51 @@
-import { MutableRefObject } from 'react'
-import { ImageProps, setDefaultImageProps } from '../core/ImageProps'
-import useBlank from './useBlank'
-import useLazyImageLoading from './useLazyImageLoading'
+import { MutableRefObject, useCallback } from 'react'
+import { getImagePropsToUpdateAll, ImageProps, ImageStatus } from '../core/ImageProps'
+import useLazyImageStatus from './useLazyImageStatus'
+import usePreloadImage from './usePreloadImage'
+import useWaitInVisibleArea from './useWaitInVisibleArea'
 
-export interface ImagePropsForHook extends ImageProps {
-  ref: MutableRefObject<HTMLElement | null>
-}
+export default function useLazyImage(
+  ref: MutableRefObject<HTMLElement | null>,
+  props: ImageProps,
+): ImageStatus {
+  const { readySrc, loaded, setImageStatus } = useLazyImageStatus(props)
 
-export default function useLazyImage(rawProps: ImagePropsForHook): {
-  loadedSrc: string
-  loaded: boolean
-} {
-  const props = setDefaultImageProps(rawProps)
+  const preloadImage = usePreloadImage(getImagePropsToUpdateAll(props))
 
-  const blank = useBlank(props.width, props.height, props.doNotCreateBlank)
+  useWaitInVisibleArea(
+    ref,
+    props,
+    useCallback(() => {
+      let firstLoad = true
 
-  const { outputSrc, loaded, cancelLoading } = useLazyImageLoading(props.ref, props)
+      preloadImage({
+        src: props.src,
+        srcSet: props.srcSet,
+        sizes: props.sizes,
+        keepWatching: props.customLoading && !props.customLoading.withoutWatchingSrcChange,
+        onLoad(loadedSrc) {
+          setImageStatus({
+            readySrc: loadedSrc,
+            loaded: true,
+          })
 
-  if (!props.load) {
-    cancelLoading()
+          if (props.onLoad) {
+            props.onLoad(loadedSrc)
+          }
 
-    return { loadedSrc: blank || '', loaded: false }
-  }
+          if (props.onFirstLoad && firstLoad) {
+            props.onFirstLoad(loadedSrc)
+          }
 
-  return { loadedSrc: outputSrc || blank || '', loaded }
+          if (props.onSrcChange && !firstLoad) {
+            props.onSrcChange(loadedSrc)
+          }
+
+          firstLoad = false
+        },
+      })
+    }, getImagePropsToUpdateAll(props)),
+  )
+
+  return { readySrc, loaded }
 }

@@ -107,7 +107,8 @@
     "no-param-reassign": "off",
     "consistent-return": "off",
     "jsx-a11y/alt-text": "off",
-    "@typescript-eslint/no-non-null-assertion": "off"
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "react/no-array-index-key": "off"
   },
   "overrides": [
     {
