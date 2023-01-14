@@ -115,7 +115,9 @@
       "files": ["*.test.ts", "*.test.tsx"],
       "rules": {
         "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
-        "global-require": "off"
+        "global-require": "off",
+        "import/no-relative-packages": "off",
+        "no-console": "off"
       }
     },
     {
@@ -124,6 +126,12 @@
         "@typescript-eslint/no-var-requires": "off",
         "import/extensions": "off",
         "no-console": "off"
+      }
+    },
+    {
+      "files": ["./e2e/**"],
+      "rules": {
+        "import/no-relative-packages": "off"
       }
     }
   ],
