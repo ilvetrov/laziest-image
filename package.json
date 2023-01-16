@@ -71,13 +71,13 @@
     "jest": "^28.1.3",
     "jest-environment-jsdom": "^28.1.3",
     "prettier": "^2.7.1",
+    "puppeteer": "^19.4.1",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "rollup": "^2.78.1",
     "rollup-plugin-cleanup": "^3.2.1",
     "ts-jest": "^28.0.8",
-    "typescript": "^4.9.4",
-    "puppeteer": "^19.4.1"
+    "typescript": "^4.9.4"
   },
   "files": [
     "dist"
@@ -88,6 +88,7 @@
     "react hook"
   ],
   "dependencies": {
+    "local-sync-state": "^2.0.0",
     "pure-handlers": "^3.2.0",
     "use-effect-without-mount": "^1.0.1"
   }

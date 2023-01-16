@@ -1,4 +1,5 @@
-import { LazyBackground, LazyImage } from '../../dist'
+import { LazyImage } from '../../dist'
+import LazyBackground from '../../src/coreEO/components/LazyBackground'
 import './App.css'
 import Controlled from './utils/Controlled'
 import { createImages } from './utils/createImages'
@@ -66,7 +67,6 @@ function App() {
           createImages('controlled-background', 1).map((image) => (
             <LazyBackground
               id="controlled-background"
-              load={show}
               key={image.id}
               src={image.src}
               className="background"

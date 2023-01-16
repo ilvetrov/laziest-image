@@ -108,7 +108,8 @@
     "consistent-return": "off",
     "jsx-a11y/alt-text": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
-    "react/no-array-index-key": "off"
+    "react/no-array-index-key": "off",
+    "class-methods-use-this": "off"
   },
   "overrides": [
     {

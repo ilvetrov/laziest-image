@@ -3378,6 +3378,11 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.npmjs.org/lines-and-columns/-/lines-and-columns-1.2.4.tgz"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
+local-sync-state@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/local-sync-state/-/local-sync-state-2.0.0.tgz#1608ba0f4a54cd7292651eb779f899064e37d59f"
+  integrity sha512-HY14dsVkA4iNrbsckdyuBK88vrCt7Uwn4sNGT8EuBZqdFQ5IcPDeSxvvd2jKaiKj1nkdbcNc/WJtKxP92R9D3g==
+
 locate-path@^5.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/locate-path/-/locate-path-5.0.0.tgz"
