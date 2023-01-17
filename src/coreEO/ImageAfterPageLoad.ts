@@ -1,4 +1,6 @@
 import { afterPageLoad } from './afterPageLoad'
+import cached from './cached'
+import { Destroyers } from './Destroyers'
 import { IDynamicImage, IDynamicImageStatus } from './DynamicImage'
 import { ReadOnlyDynamic } from './ReadOnlyDynamic'
 
@@ -9,12 +11,12 @@ export class ImageAfterPageLoad implements IDynamicImage {
     return this.origin.status()
   }
 
-  private readonly destroyers = new Set<() => void>()
+  private readonly destroyers = cached(() => new Destroyers())
 
   async load() {
     const waitingAfterPageLoad = afterPageLoad()
 
-    this.destroyers.add(waitingAfterPageLoad.destroy)
+    this.destroyers().add(waitingAfterPageLoad.destroy)
 
     await waitingAfterPageLoad.promise
 
@@ -22,7 +24,7 @@ export class ImageAfterPageLoad implements IDynamicImage {
   }
 
   destroy(): void {
-    this.destroyers.forEach((destroyer) => destroyer())
+    this.destroyers().destroyAll()
     this.origin.destroy()
   }
 }

@@ -1,3 +1,5 @@
+import cached from './cached'
+import { Destroyers } from './Destroyers'
 import { IDynamicImage, IDynamicImageStatus } from './DynamicImage'
 import { ReadOnlyDynamic } from './ReadOnlyDynamic'
 import waitInVisibleArea from './waitInVisibleArea'
@@ -14,7 +16,7 @@ export class ImageWaitInVisibleArea implements IDynamicImage {
     return this.origin.status()
   }
 
-  private readonly destroyers = new Set<() => void>()
+  private readonly destroyers = cached(() => new Destroyers())
 
   async load() {
     const waitingInVisibleArea = waitInVisibleArea({
@@ -23,7 +25,7 @@ export class ImageWaitInVisibleArea implements IDynamicImage {
       xOffset: this.xOffset,
     })
 
-    this.destroyers.add(waitingInVisibleArea.destroyer)
+    this.destroyers().add(waitingInVisibleArea.destroyer)
 
     await waitingInVisibleArea.promise
 
@@ -31,7 +33,7 @@ export class ImageWaitInVisibleArea implements IDynamicImage {
   }
 
   destroy(): void {
-    this.destroyers.forEach((destroyer) => destroyer())
+    this.destroyers().destroyAll()
     this.origin.destroy()
   }
 }

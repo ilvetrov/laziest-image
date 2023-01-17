@@ -1,6 +1,7 @@
 import localSyncState from 'local-sync-state'
 import preloadImage from '../core/preloadImage'
 import cached from './cached'
+import { Destroyers } from './Destroyers'
 import DynamicFromLocalSyncState from './DynamicFromLocalSyncState'
 import { IDynamicImage } from './DynamicImage'
 import { ReadOnlyDynamic } from './ReadOnlyDynamic'
@@ -24,10 +25,10 @@ export class VirtualWatchingImage implements IDynamicImage {
 
   public readonly status = cached(() => new ReadOnlyDynamic(this.statusState()))
 
-  private readonly destroyers = new Set<() => void>()
+  private readonly destroyers = cached(() => new Destroyers())
 
   load(): void {
-    this.destroyers.add(
+    this.destroyers().add(
       preloadImage({
         src: this.src,
         srcSet: this.srcSet,
@@ -44,6 +45,6 @@ export class VirtualWatchingImage implements IDynamicImage {
   }
 
   destroy(): void {
-    this.destroyers.forEach((destroyer) => destroyer())
+    this.destroyers().destroyAll()
   }
 }

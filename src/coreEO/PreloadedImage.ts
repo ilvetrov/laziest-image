@@ -1,5 +1,6 @@
 import preloadImage from '../core/preloadImage'
 import cached from './cached'
+import { Destroyers } from './Destroyers'
 import { IDynamicImage } from './DynamicImage'
 import { DynamicWithSubscribeMiddleware } from './DynamicWithSubscribeMiddleware'
 import { ReadOnlyDynamic } from './ReadOnlyDynamic'
@@ -21,11 +22,11 @@ export class PreloadedImage implements IDynamicImage {
       ),
   )
 
-  private destroyers = new Set<() => void>()
+  private destroyers = cached(() => new Destroyers())
 
   private loadImage(src: string): Promise<string> {
     return new Promise((resolve) => {
-      this.destroyers.add(
+      this.destroyers().add(
         preloadImage({
           src,
           srcSet: this.srcSet,
@@ -46,6 +47,6 @@ export class PreloadedImage implements IDynamicImage {
   destroy(): void {
     this.origin.destroy()
     this.status().destroy()
-    this.destroyers.forEach((destroyer) => destroyer())
+    this.destroyers().destroyAll()
   }
 }

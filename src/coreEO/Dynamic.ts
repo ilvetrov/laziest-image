@@ -1,3 +1,6 @@
+import cached from './cached'
+import { Destroyers } from './Destroyers'
+
 type Getter<T> = () => T
 type Subscribe<T> = (callback: (value: T, lastValue: T) => void) => Unsubscribe
 type Setter<T> = (value: T | ((lastValue: T) => T)) => void
@@ -27,23 +30,19 @@ export class Dynamic<T> implements IDynamic<T> {
     this.origin.set(value)
   }
 
-  private readonly subscriberDestroyers = new Set<() => void>()
-
   subscribe(callback: (value: T, lastValue: T) => void): Unsubscribe {
     if (this.destroyed) {
       return () => {}
     }
 
-    const destroyer = this.origin.subscribe(callback)
-
-    this.subscriberDestroyers.add(destroyer)
-
-    return destroyer
+    return this.subscriberDestroyers().add(this.origin.subscribe(callback))
   }
+
+  private readonly subscriberDestroyers = cached(() => new Destroyers())
 
   destroy() {
     this.destroyed = true
-    this.subscriberDestroyers.forEach((destroyer) => destroyer())
+    this.subscriberDestroyers().destroyAll()
     this.origin.destroy()
   }
 }
