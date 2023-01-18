@@ -45,6 +45,7 @@ export class VirtualWatchingImage implements IDynamicImage {
   }
 
   destroy(): void {
+    this.status().destroy()
     this.destroyers().destroyAll()
   }
 }

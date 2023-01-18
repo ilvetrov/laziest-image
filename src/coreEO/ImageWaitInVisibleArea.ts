@@ -7,7 +7,7 @@ import waitInVisibleArea from './waitInVisibleArea'
 export class ImageWaitInVisibleArea implements IDynamicImage {
   constructor(
     private readonly origin: IDynamicImage,
-    private readonly element: HTMLElement,
+    private readonly element: () => HTMLElement,
     private readonly yOffset?: number,
     private readonly xOffset?: number,
   ) {}
@@ -20,7 +20,7 @@ export class ImageWaitInVisibleArea implements IDynamicImage {
 
   async load() {
     const waitingInVisibleArea = waitInVisibleArea({
-      element: this.element,
+      element: this.element(),
       yOffset: this.yOffset,
       xOffset: this.xOffset,
     })

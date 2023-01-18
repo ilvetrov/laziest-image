@@ -35,14 +35,14 @@ export class Dynamic<T> implements IDynamic<T> {
       return () => {}
     }
 
-    return this.subscriberDestroyers().add(this.origin.subscribe(callback))
+    return this.destroyers().add(this.origin.subscribe(callback))
   }
 
-  private readonly subscriberDestroyers = cached(() => new Destroyers())
+  private readonly destroyers = cached(() => new Destroyers())
 
   destroy() {
     this.destroyed = true
-    this.subscriberDestroyers().destroyAll()
+    this.destroyers().destroyAll()
     this.origin.destroy()
   }
 }

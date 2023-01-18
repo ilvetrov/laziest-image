@@ -1,5 +1,5 @@
-import { LazyImage } from '../../dist'
-import LazyBackground from '../../src/coreEO/components/LazyBackground'
+import { LazyBackground } from '../../src/coreEO/components/LazyBackground'
+import LazyImage from '../../src/coreEO/components/LazyImage'
 import './App.css'
 import Controlled from './utils/Controlled'
 import { createImages } from './utils/createImages'
@@ -51,7 +51,7 @@ function App() {
           createImages('controlled', 1).map((image) => (
             <LazyImage
               id="controlled"
-              load={show}
+              canLoad={show}
               key={image.id}
               src={image.src}
               width={image.width}
@@ -81,7 +81,7 @@ function App() {
           createImages('default-with-events', 1).map((image) => (
             <LazyImage
               id="default-with-events"
-              load={show}
+              canLoad={show}
               key={image.id}
               src={image.src}
               onLoad={(src) => setText(`load: ${src}`)}
@@ -98,7 +98,7 @@ function App() {
           createImages('default-with-src-set', 1).map((image) => (
             <LazyImage
               id="default-with-src-set"
-              load={show}
+              canLoad={show}
               key={image.id}
               src={image.src}
               srcSet={`${image.src}?w=200 200w, ${image.src}?w=500 500w, ${image.src} 1000w`}

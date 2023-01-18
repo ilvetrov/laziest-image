@@ -6,6 +6,7 @@ export type IDestroyer = () => void
 export interface IDestroyers {
   add(destroyer: IDestroyer): IDestroyer
   destroyAll(): void
+  amount(): number
 }
 
 export class Destroyers implements IDestroyers {
@@ -14,7 +15,7 @@ export class Destroyers implements IDestroyers {
   private readonly userCachedDestroyers = cached(() => new CachedKey<IDestroyer>())
 
   private generateDestroyer(userDestroyer: () => void): IDestroyer {
-    return this.userCachedDestroyers().get(userDestroyer, () => {
+    return this.userCachedDestroyers().value(userDestroyer, () => {
       const innerDestroyer = () => {
         userDestroyer()
         this.list().delete(innerDestroyer)
@@ -35,5 +36,9 @@ export class Destroyers implements IDestroyers {
   destroyAll(): void {
     this.list().forEach((destroyer) => destroyer())
     this.list().clear()
+  }
+
+  amount(): number {
+    return this.list().size
   }
 }
