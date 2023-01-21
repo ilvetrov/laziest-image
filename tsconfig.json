@@ -15,7 +15,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    "experimentalDecorators": true
   },
   "include": ["src", "**/*.js"],
   "exclude": ["node_modules", "dist", "example"]
