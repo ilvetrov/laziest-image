@@ -43,6 +43,7 @@ export class LazyImageWithWatchingVirtualSrc implements ILazyImage {
   }
 
   async destroy() {
+    this.origin.destroy()
     this.destroyers.destroyAll()
     ;(await this.srcDataWithControl()).unsubscribeAll()
   }
