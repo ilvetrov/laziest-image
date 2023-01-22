@@ -3,6 +3,7 @@ import { Destroyers } from './decorated-js/Destroyers'
 import once from './decorated-js/onceMethod'
 import { IReactive } from './decorated-js/Reactive'
 import { ILazyImage, ImageSrcData } from './LazyImage'
+import { makeOptional } from './LazyImageOptional'
 
 export class LazyImageAfterPageLoad implements ILazyImage {
   constructor(private readonly origin: ILazyImage) {}
@@ -20,8 +21,14 @@ export class LazyImageAfterPageLoad implements ILazyImage {
     return this.origin.srcData()
   }
 
+  defaultSrcData(): ImageSrcData {
+    return this.origin.defaultSrcData()
+  }
+
   destroy(): void {
     this.destroyers.destroyAll()
     this.origin.destroy()
   }
 }
+
+export const LazyImageAfterPageLoadOptional = makeOptional(LazyImageAfterPageLoad)

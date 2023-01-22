@@ -9,11 +9,15 @@ export interface ImageSrcData {
 
 export interface ILazyImage {
   srcData(): Promise<IReactive<ImageSrcData>>
+  defaultSrcData(): ImageSrcData
   destroy(): void
 }
 
 export class LazyImage implements ILazyImage {
-  constructor(private readonly imageSrcData: ImageSrcData) {}
+  constructor(
+    private readonly imageSrcData: ImageSrcData,
+    private readonly defaultSrcDataPlain: ImageSrcData = { src: '' },
+  ) {}
 
   @once
   async srcData(): Promise<IReactive<ImageSrcData>> {
@@ -21,6 +25,10 @@ export class LazyImage implements ILazyImage {
       () => this.imageSrcData,
       () => () => {},
     )
+  }
+
+  defaultSrcData(): ImageSrcData {
+    return this.defaultSrcDataPlain
   }
 
   destroy(): void {}

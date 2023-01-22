@@ -16,6 +16,10 @@ export class LazyImageWithWatchingVirtualSrc implements ILazyImage {
     return new ControlledReactiveFromPlain(await this.origin.srcData())
   }
 
+  defaultSrcData(): ImageSrcData {
+    return this.origin.defaultSrcData()
+  }
+
   @once
   async srcData(): Promise<IReactive<ImageSrcData>> {
     const { src, srcSet, sizes } = (await this.srcDataWithControl()).current()

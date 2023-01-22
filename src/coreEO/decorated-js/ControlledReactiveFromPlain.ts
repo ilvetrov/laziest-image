@@ -11,7 +11,7 @@ export class ControlledReactiveFromPlain<T> implements IControlledReactive<T> {
   ) {}
 
   @once
-  private controlled(): IControlledReactive<T> {
+  private get controlled(): IControlledReactive<T> {
     const controlled = this.controlledFabric
       ? this.controlledFabric()
       : new ControlledReactiveFromLocalSyncState(localSyncState(this.origin.current()))
@@ -22,18 +22,18 @@ export class ControlledReactiveFromPlain<T> implements IControlledReactive<T> {
   }
 
   current(): T {
-    return this.controlled().current()
+    return this.controlled.current()
   }
 
   onChange(callback: (value: T) => void): Unsubscribe {
-    return this.controlled().onChange(callback)
+    return this.controlled.onChange(callback)
   }
 
   changeValue(value: T): void {
-    this.controlled().changeValue(value)
+    this.controlled.changeValue(value)
   }
 
   unsubscribeAll(): void {
-    this.controlled().unsubscribeAll()
+    this.controlled.unsubscribeAll()
   }
 }
