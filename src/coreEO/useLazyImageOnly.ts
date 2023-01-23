@@ -3,10 +3,12 @@ import createDecoratingHook, { DecoratingHook } from './decorated-js/react/creat
 import { ILazyImage, LazyImage } from './LazyImage'
 import { LazyImageAfterPageLoadOptional } from './LazyImageAfterPageLoad'
 import { LazyImageInVisibleArea } from './LazyImageInVisibleArea'
+import LazyImageWithUpdateOnSubscribe from './LazyImageWithUpdateOnSubscribe'
 import { LazyImageWithWatchingVirtualSrc } from './LazyImageWithWatchingVirtualSrc'
 
 const useLazyImageWithWatchingVirtualSrc = createDecoratingHook(LazyImageWithWatchingVirtualSrc)
 const useLazyImageInVisibleArea = createDecoratingHook(LazyImageInVisibleArea)
+const useLazyImageWithUpdateOnSubscribe = createDecoratingHook(LazyImageWithUpdateOnSubscribe)
 
 export function useLazyImage(...props: ConstructorParameters<typeof LazyImage>) {
   return useMemo(() => {
@@ -25,10 +27,12 @@ export const useLazyImageAfterPageLoad: DecoratingHook<typeof LazyImageAfterPage
 }
 
 export function useCombinedLazy(): ILazyImage {
-  return useLazyImageInVisibleArea(
-    useLazyImageWithWatchingVirtualSrc(
-      useLazyImageAfterPageLoad(true, useLazyImage(useMemo(() => ({ src: '' }), []))),
+  return useLazyImageWithUpdateOnSubscribe(
+    useLazyImageInVisibleArea(
+      useLazyImageWithWatchingVirtualSrc(
+        useLazyImageAfterPageLoad(useLazyImage(useMemo(() => ({ src: '' }), [])), true),
+      ),
+      useCallback(() => document.createElement('div'), []),
     ),
-    useCallback(() => document.createElement('div'), []),
   )
 }

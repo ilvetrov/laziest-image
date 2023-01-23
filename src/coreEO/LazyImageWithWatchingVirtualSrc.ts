@@ -30,10 +30,12 @@ export class LazyImageWithWatchingVirtualSrc implements ILazyImage {
         sizes,
         srcSet,
         onLoad: async (newSrc) => {
-          ;(await this.srcDataWithControl()).changeValue({
+          const srcDataWithControl = await this.srcDataWithControl()
+
+          srcDataWithControl.changeValue({
             src: newSrc,
-            srcSet,
-            sizes,
+            srcSet: srcDataWithControl.current().srcSet,
+            sizes: srcDataWithControl.current().sizes,
           })
         },
         keepWatching: true,
