@@ -22,4 +22,17 @@ describe('Destroyers', () => {
 
     expect(destroyed).toBe(false)
   })
+
+  it('looses this', () => {
+    const destroyers = new Destroyers()
+
+    let destroyed = false
+
+    function thirdExampleFunc(onDestroy: (callback: () => void) => void) {
+      onDestroy(() => (destroyed = true))
+    }
+
+    expect(() => thirdExampleFunc(destroyers.add)).toThrowError()
+    expect(destroyed).toBe(false)
+  })
 })

@@ -1,17 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import useEffectAsync from './decorated-js/react/useEffectAsync'
 import { ILazyImage, ImageSrcData } from './LazyImage'
 
 export default function useSrcData(lazyImage: ILazyImage): ImageSrcData {
   const [srcData, setSrcData] = useState(lazyImage.defaultSrcData())
 
-  useEffect(() => {
-    lazyImage.srcData().then((currentSrcData) => {
-      setSrcData(currentSrcData.current())
-      currentSrcData.onChange((newSrcData) => setSrcData(newSrcData))
-    })
+  useEffectAsync(
+    async (onDestroy, destroyed) => {
+      const currentSrcData = await lazyImage.srcData()
 
-    return () => lazyImage.destroy()
-  }, [lazyImage])
+      if (destroyed.current) {
+        return
+      }
+
+      setSrcData(currentSrcData.current())
+      onDestroy(currentSrcData.onChange((newSrcData) => setSrcData(newSrcData)))
+    },
+    [lazyImage],
+  )
 
   return srcData
 }
