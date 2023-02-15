@@ -110,7 +110,8 @@
     "@typescript-eslint/no-non-null-assertion": "off",
     "react/no-array-index-key": "off",
     "class-methods-use-this": "off",
-    "func-names": "off"
+    "func-names": "off",
+    "react/prop-types": "off"
   },
   "overrides": [
     {

@@ -1,5 +1,7 @@
-import { LazyBackground } from '../../src/coreEO/components/LazyBackground'
-import LazyImage from '../../src/coreEO/components/LazyImage'
+import { useMemo } from 'react'
+import LazyBackground from '../../src/components/LazyBackground'
+import LazyImage from '../../src/componentsFP/LazyImage'
+import useOnce from '../../src/hooks/useOnce'
 import './App.css'
 import Controlled from './utils/Controlled'
 import { createImages } from './utils/createImages'
@@ -10,9 +12,10 @@ function App() {
       <h2>After page load</h2>
       {createImages('after-page-load').map((image, index) => (
         <LazyImage
-          id={`after-page-load-${index}`}
           key={image.id}
           src={image.src}
+          srcSet={`${image.src}?w=200 200w, ${image.src}?w=500 500w, ${image.src} 1000w`}
+          sizes="(max-width: 500px) 10px, (max-width: 1000px) 250px, 100vw"
           width={image.width}
           height={image.height}
           afterPageLoad
@@ -22,7 +25,6 @@ function App() {
       <h2>With sizes</h2>
       {createImages('with-sizes').map((image, index) => (
         <LazyImage
-          id={`with-sizes-${index}`}
           key={image.id}
           src={image.src}
           width={image.width}
@@ -32,7 +34,7 @@ function App() {
 
       <h2>Default</h2>
       {createImages('default').map((image, index) => (
-        <LazyImage id={`default-${index}`} key={image.id} src={image.src}></LazyImage>
+        <LazyImage key={image.id} src={image.src}></LazyImage>
       ))}
 
       <h2>Background</h2>
@@ -50,8 +52,6 @@ function App() {
         {(show) =>
           createImages('controlled', 1).map((image) => (
             <LazyImage
-              id="controlled"
-              canLoad={show}
               key={image.id}
               src={image.src}
               width={image.width}
@@ -80,8 +80,6 @@ function App() {
         {(show, setText) =>
           createImages('default-with-events', 1).map((image) => (
             <LazyImage
-              id="default-with-events"
-              canLoad={show}
               key={image.id}
               src={image.src}
               onLoad={(src) => setText(`load: ${src}`)}
@@ -97,8 +95,6 @@ function App() {
         {(show, setText) =>
           createImages('default-with-src-set', 1).map((image) => (
             <LazyImage
-              id="default-with-src-set"
-              canLoad={show}
               key={image.id}
               src={image.src}
               srcSet={`${image.src}?w=200 200w, ${image.src}?w=500 500w, ${image.src} 1000w`}
