@@ -1,7 +1,7 @@
 export interface IOneMemory<T> {
   read(): T
   write(value: T): void
-  clear(): void
+  reset(): void
 }
 
 type Callback<Value> = (value: Value) => void
@@ -21,7 +21,7 @@ export function OneMemory<T>(defaultContent?: T): IOneMemory<T | undefined> {
   return {
     read: () => content,
     write: (value) => (content = value),
-    clear: () => (content = defaultContent),
+    reset: () => (content = defaultContent),
   }
 }
 
@@ -30,7 +30,7 @@ export function ReactiveOneMemory<T>(origin: IOneMemory<T>): IReactiveOneMemory<
 
   return {
     read: origin.read,
-    clear: origin.clear,
+    reset: origin.reset,
 
     write(value) {
       origin.write(value)

@@ -19,7 +19,7 @@ export function LazyImage(finalSrc: ISrc, initSrc: ISrc): ILazyImage {
     },
     unload() {
       controlledSrc.unsubscribeAll()
-      controlledSrc.changeValue(initSrc)
+      controlledSrc.clear()
     },
   }
 }

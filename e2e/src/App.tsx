@@ -1,5 +1,5 @@
-import { useMemo } from 'react'
-import LazyBackground from '../../src/components/LazyBackground'
+import { useCallback, useMemo } from 'react'
+import LazyBackground from '../../src/componentsFP/LazyBackground'
 import LazyImage from '../../src/componentsFP/LazyImage'
 import useOnce from '../../src/hooks/useOnce'
 import './App.css'
@@ -9,6 +9,16 @@ import { createImages } from './utils/createImages'
 function App() {
   return (
     <div className="App">
+      <h2>With sizes</h2>
+      {createImages('with-sizes').map((image, index) => (
+        <LazyImage
+          key={image.id}
+          src={image.src}
+          width={image.width}
+          height={image.height}
+        ></LazyImage>
+      ))}
+
       <h2>After page load</h2>
       {createImages('after-page-load').map((image, index) => (
         <LazyImage
@@ -22,16 +32,6 @@ function App() {
         ></LazyImage>
       ))}
 
-      <h2>With sizes</h2>
-      {createImages('with-sizes').map((image, index) => (
-        <LazyImage
-          key={image.id}
-          src={image.src}
-          width={image.width}
-          height={image.height}
-        ></LazyImage>
-      ))}
-
       <h2>Default</h2>
       {createImages('default').map((image, index) => (
         <LazyImage key={image.id} src={image.src}></LazyImage>
@@ -40,10 +40,12 @@ function App() {
       <h2>Background</h2>
       {createImages('background').map((image, index) => (
         <LazyBackground
-          id={`background-${index}`}
           key={image.id}
           src={image.src}
-          className="background"
+          div={{
+            id: `background-${index}`,
+            className: 'background'
+          }}
         ></LazyBackground>
       ))}
 
@@ -66,10 +68,12 @@ function App() {
         {(show) =>
           createImages('controlled-background', 1).map((image) => (
             <LazyBackground
-              id="controlled-background"
               key={image.id}
               src={image.src}
-              className="background"
+              div={{
+                id: `controlled-background`,
+                className: 'background'
+              }}
             ></LazyBackground>
           ))
         }
@@ -77,14 +81,14 @@ function App() {
 
       <h2>Default with events</h2>
       <Controlled id="default-with-events">
-        {(show, setText) =>
+        {(setText) =>
           createImages('default-with-events', 1).map((image) => (
             <LazyImage
               key={image.id}
               src={image.src}
-              onLoad={(src) => setText(`load: ${src}`)}
-              onFirstLoad={(src) => setText(`firstLoad: ${src}`)}
-              onSrcChange={(src) => setText(`srcChange: ${src}`)}
+              onLoad={useCallback((src: string) => setText(`load: ${src}`), [])}
+              onFirstLoad={useCallback((src: string) => setText(`firstLoad: ${src}`), [])}
+              onSrcChange={useCallback((src: string) => setText(`srcChange: ${src}`), [])}
             ></LazyImage>
           ))
         }
@@ -92,16 +96,16 @@ function App() {
 
       <h2>Default with srcSet</h2>
       <Controlled id="default-with-src-set">
-        {(show, setText) =>
+        {(setText) =>
           createImages('default-with-src-set', 1).map((image) => (
             <LazyImage
               key={image.id}
               src={image.src}
               srcSet={`${image.src}?w=200 200w, ${image.src}?w=500 500w, ${image.src} 1000w`}
               sizes="(max-width: 500px) 10px, (max-width: 1000px) 250px, 100vw"
-              onLoad={(src) => setText(`load: ${src}`)}
-              onFirstLoad={(src) => setText(`firstLoad: ${src}`)}
-              onSrcChange={(src) => setText(`srcChange: ${src}`)}
+              onLoad={useCallback((src: string) => setText(`load: ${src}`), [])}
+              onFirstLoad={useCallback((src: string) => setText(`firstLoad: ${src}`), [])}
+              onSrcChange={useCallback((src: string) => setText(`srcChange: ${src}`), [])}
             ></LazyImage>
           ))
         }
@@ -109,18 +113,20 @@ function App() {
 
       <h2>Background with srcSet</h2>
       <Controlled id="background-with-src-set">
-        {(show, setText) =>
+        {(setText) =>
           createImages('background-with-src-set', 1).map((image) => (
             <LazyBackground
-              id="background-with-src-set"
               key={image.id}
               src={image.src}
               srcSet={`${image.src}?w=200 200w, ${image.src}?w=500 500w, ${image.src} 1000w`}
               sizes="(max-width: 500px) 10px, (max-width: 1000px) 250px, 100vw"
-              onLoad={(src) => setText(`load: ${src}`)}
-              onFirstLoad={(src) => setText(`firstLoad: ${src}`)}
-              onSrcChange={(src) => setText(`srcChange: ${src}`)}
-              className="background"
+              onLoad={useCallback((src: string) => setText(`load: ${src}`), [])}
+              onFirstLoad={useCallback((src: string) => setText(`firstLoad: ${src}`), [])}
+              onSrcChange={useCallback((src: string) => setText(`srcChange: ${src}`), [])}
+              div={{
+                id: `background-with-src-set`,
+                className: 'background'
+              }}
             ></LazyBackground>
           ))
         }

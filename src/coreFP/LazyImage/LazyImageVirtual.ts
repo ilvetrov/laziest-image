@@ -16,18 +16,19 @@ export function LazyImageVirtual(finalSrc: ISrc, initSrc: ISrc): ILazyImage {
     load() {
       destroyers.add(
         'load',
-        preloadImage(
-          finalSrc,
-          (newSrc) => {
+        preloadImage({
+          src: finalSrc,
+          onLoad: (newSrc) => {
             controlledSrc.changeValue(LoadedSrc(newSrc))
           },
-          true,
-        ),
+          keepWatching: true,
+        }),
       )
     },
     unload() {
       controlledSrc.unsubscribeAll()
       destroyers.destroyAll()
+      controlledSrc.clear()
     },
   }
 }

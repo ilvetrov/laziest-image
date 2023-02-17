@@ -1,12 +1,25 @@
-import React, { useRef } from 'react'
-import { LazyImageProps } from '../coreOO/LazyImageProps'
+import React, { memo, useMemo, useRef } from 'react'
 import { useStableCallbacksIn } from '../hooks/useStableCallback'
-import { useCustomLazy } from './useCustomLazy'
+import { LazyImageProps } from './LazyImageProps'
+import { useLazyImage } from './useLazyImage'
+import { useNativeProps } from './useNativeProps'
+// import { useNativeLazy } from './useNativeLazy'
+import { useOnLoadListeners, useOnLoadListenersOnlyOnLoaded } from './useOnLoadListeners'
+import { useSrc } from './useSrc'
 
-export default function LazyImage(rawProps: LazyImageProps) {
-  const props = {
+function LazyImage(rawProps: LazyImageProps) {
+  const ref = useRef<HTMLImageElement>(null)
+
+  const props: LazyImageProps = {
     ...rawProps,
-    ...rawProps.customLoading,
+    customLoading: useMemo(
+      () =>
+        rawProps.customLoading && {
+          withoutWatchingSrcChange: true,
+          ...rawProps.customLoading,
+        },
+      [rawProps.customLoading],
+    ),
     ...useStableCallbacksIn({
       onLoad: rawProps.onLoad,
       onFirstLoad: rawProps.onFirstLoad,
@@ -14,10 +27,23 @@ export default function LazyImage(rawProps: LazyImageProps) {
     }),
   }
 
-  const ref = useRef<HTMLImageElement>(null)
-  const didFirstLoad = useRef(false)
-
-  const { src, srcSet, sizes } = useCustomLazy(ref, props)
+  const { src, srcSet, sizes, loaded } = useSrc(
+    useLazyImage(
+      ref,
+      useNativeProps({
+        src: props.src,
+        sizes: props.sizes,
+        srcSet: props.srcSet,
+        width: props.width,
+        afterPageLoad: props.afterPageLoad,
+        customLoading: props.customLoading,
+        height: props.height,
+        onLoad: props.onLoad,
+        onFirstLoad: props.onFirstLoad,
+        onSrcChange: props.onSrcChange,
+      }),
+    ),
+  )
 
   return (
     <img
@@ -27,28 +53,19 @@ export default function LazyImage(rawProps: LazyImageProps) {
       sizes={sizes || undefined}
       width={props.width}
       height={props.height}
-      onLoad={() => {
-        if (!ref.current) {
-          return
-        }
-
-        if (props.customLoading) {
-          return
-        }
-
-        props.onLoad(ref.current.currentSrc)
-
-        if (didFirstLoad.current) {
-          props.onSrcChange(ref.current.currentSrc)
-        }
-
-        if (!didFirstLoad.current) {
-          didFirstLoad.current = true
-          props.onFirstLoad(ref.current.currentSrc)
-        }
-      }}
+      onLoad={useOnLoadListenersOnlyOnLoaded(
+        useOnLoadListeners(
+          () => ref.current?.currentSrc,
+          props.onLoad,
+          props.onFirstLoad,
+          props.onSrcChange,
+        ),
+        loaded,
+      )}
       loading="lazy"
       decoding="async"
     />
   )
 }
+
+export default memo(LazyImage)
