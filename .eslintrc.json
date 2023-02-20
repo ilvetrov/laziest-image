@@ -111,7 +111,8 @@
     "react/no-array-index-key": "off",
     "class-methods-use-this": "off",
     "func-names": "off",
-    "react/prop-types": "off"
+    "react/prop-types": "off",
+    "prefer-arrow-callback": "off"
   },
   "overrides": [
     {

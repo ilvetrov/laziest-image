@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { browserSupportsLazyLoading } from '../core/browserSupportsLazyLoading'
 import { If } from '../coreFP/If'
+import { browserSupportsLazyLoading } from './browserSupportsLazyLoading'
 import { LazyImageProps } from './LazyImageProps'
 
 export function useNativeProps(props: LazyImageProps): LazyImageProps {

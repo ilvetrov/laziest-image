@@ -4,10 +4,12 @@ import { If } from '../coreFP/If'
 import { BlankedLazyImage } from '../coreFP/LazyImage/BlankedLazyImage'
 import { ILazyImage, LazyImage } from '../coreFP/LazyImage/LazyImage'
 import { LazyImageAfterPageLoad } from '../coreFP/LazyImage/LazyImageAfterPageLoad'
+import { LazyImageEvents } from '../coreFP/LazyImage/LazyImageEvents'
 import { LazyImageInVisibleArea } from '../coreFP/LazyImage/LazyImageInVisibleArea'
 import { LazyImageVirtual } from '../coreFP/LazyImage/LazyImageVirtual'
 import { LazyImageWithUpdateOnlyIfVisible } from '../coreFP/LazyImage/LazyImageWithUpdateOnlyIfVisible'
 import { PreloadedLazyImage } from '../coreFP/LazyImage/PreloadedLazyImage'
+import { OneMemory } from '../coreFP/Memory/OneMemory'
 import { NonNullable } from '../coreFP/NonNullable/NonNullable'
 import { LazyImageProps } from './LazyImageProps'
 
@@ -17,6 +19,8 @@ export function useLazyImage(
   ref: MutableRefObject<HTMLElement | null>,
   props: LazyImageProps,
 ): ILazyImage {
+  const didFirstLoad = useMemo(() => OneMemory(false), [])
+
   return useMemo(() => {
     const needEmptyInit = Boolean(props.afterPageLoad || props.customLoading)
 
@@ -28,8 +32,18 @@ export function useLazyImage(
     }
 
     return DecoratorsChainOptional(
-      // eslint-disable-next-line prettier/prettier
       [
+        [
+          (origin) =>
+            LazyImageEvents(
+              origin,
+              props.onLoad,
+              props.onFirstLoad,
+              props.onSrcChange,
+              didFirstLoad,
+            ),
+          props.onLoad || props.onFirstLoad || props.onSrcChange,
+        ],
         [
           (origin) =>
             LazyImageInVisibleArea(
@@ -51,7 +65,7 @@ export function useLazyImage(
               props.customLoading?.yOffset,
               props.customLoading?.xOffset,
             ),
-          props.customLoading,
+          props.customLoading && !props.customLoading?.withoutWatchingSrcChange,
         ],
       ],
       If(

@@ -1,10 +1,14 @@
+import { Destroyers } from '../Destroyers/Destroyers'
 import { UniqueDestroyers } from '../Destroyers/UniqueDestroyers'
 import { IReactive } from './Reactive'
 
 export function ReactiveMiddleware<T>(
   origin: IReactive<T>,
   middleCurrent: (value: T) => T,
-  middleOnChange: (value: T) => T | Promise<T> = middleCurrent,
+  middleOnChange: (
+    value: T,
+    onDestroy: (callback: () => void) => void,
+  ) => T | Promise<T> = middleCurrent,
 ): IReactive<T> {
   return {
     current() {
@@ -13,21 +17,27 @@ export function ReactiveMiddleware<T>(
     onChange(callback) {
       const destroyers = UniqueDestroyers()
 
-      const onChangeDestroyer = origin.onChange(async (value) => {
-        let destroyed = false
+      destroyers.add(
+        'originOnChange',
+        origin.onChange(async (value) => {
+          let destroyed = false
 
-        destroyers.add('middleOnChange', () => (destroyed = true))
+          destroyers.add('middleOnChange', () => (destroyed = true))
 
-        const middlePromise = middleOnChange(value)
-        const middleValue = middlePromise instanceof Promise ? await middlePromise : middlePromise
+          const middleDestroyers = Destroyers()
 
-        if (destroyed) return
+          destroyers.add('middleDestroyers', () => middleDestroyers.destroyAll())
 
-        callback(middleValue)
-      })
+          const middlePromise = middleOnChange(value, middleDestroyers.add)
+          const middleValue = middlePromise instanceof Promise ? await middlePromise : middlePromise
+
+          if (destroyed) return
+
+          callback(middleValue)
+        }),
+      )
 
       return () => {
-        onChangeDestroyer()
         destroyers.destroyAll()
       }
     },

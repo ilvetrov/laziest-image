@@ -6,8 +6,6 @@ export function BlankedLazyImage(origin: ILazyImage): ILazyImage {
   return {
     src: () => ReactiveMiddleware(origin.src(), BlankedSrc, BlankedSrc),
     load: origin.load,
-    unload() {
-      origin.unload()
-    },
+    unload: origin.unload,
   }
 }

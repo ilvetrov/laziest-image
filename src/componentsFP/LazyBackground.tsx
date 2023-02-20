@@ -1,75 +1,85 @@
-import React, { memo, useEffect, useMemo, useRef } from 'react'
+import React, { forwardRef, memo, useMemo } from 'react'
+import useCombinedRef from '../hooks/useCombinedRef'
 import { useStableCallbacksIn } from '../hooks/useStableCallback'
 import { LazyImageProps } from './LazyImageProps'
 import { useLazyImage } from './useLazyImage'
-import { useOnLoadListeners } from './useOnLoadListeners'
 import { useSrc } from './useSrc'
 
-type LazyBackgroundProps = LazyImageProps & {
-  div?: Omit<
+type LazyBackgroundProps = LazyImageProps &
+  Omit<
     React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
-    'style'
+    keyof LazyImageProps | 'style'
   > & {
+    // eslint-disable-next-line react/no-unused-prop-types
     style?: Omit<React.CSSProperties, 'backgroundImage' | 'background'>
   }
-}
 
-function LazyBackground(rawProps: LazyBackgroundProps) {
-  const props: LazyBackgroundProps = {
-    ...rawProps,
-    customLoading: useMemo(
-      () => ({
-        withoutBlank: true,
-        ...rawProps.customLoading,
+const LazyBackground = memo(
+  forwardRef<HTMLDivElement, LazyBackgroundProps>(function LazyBackground(
+    {
+      src,
+      srcSet,
+      sizes,
+      width,
+      height,
+      afterPageLoad,
+      customLoading,
+      onLoad,
+      onFirstLoad,
+      onSrcChange,
+      ...elementProps
+    },
+    userRef,
+  ) {
+    const props: LazyBackgroundProps = {
+      src,
+      srcSet,
+      sizes,
+      width,
+      height,
+      afterPageLoad,
+      customLoading: useMemo(
+        () => ({
+          withoutBlank: true,
+          ...customLoading,
+        }),
+        [customLoading],
+      ),
+      ...useStableCallbacksIn({
+        onLoad,
+        onFirstLoad,
+        onSrcChange,
       }),
-      [rawProps.customLoading],
-    ),
-    ...useStableCallbacksIn({
-      onLoad: rawProps.onLoad,
-      onFirstLoad: rawProps.onFirstLoad,
-      onSrcChange: rawProps.onSrcChange,
-    }),
-  }
+    }
 
-  const ref = useRef<HTMLDivElement>(null)
+    const ref = useCombinedRef(userRef)
 
-  const lazyImage = useLazyImage(ref, {
-    src: props.src,
-    sizes: props.sizes,
-    srcSet: props.srcSet,
-    width: props.width,
-    afterPageLoad: props.afterPageLoad,
-    customLoading: props.customLoading,
-    height: props.height,
-    onLoad: props.onLoad,
-    onFirstLoad: props.onFirstLoad,
-    onSrcChange: props.onSrcChange,
-  })
+    const { src: resultSrc, loaded } = useSrc(
+      useLazyImage(ref, {
+        src: props.src,
+        sizes: props.sizes,
+        srcSet: props.srcSet,
+        width: props.width,
+        afterPageLoad: props.afterPageLoad,
+        customLoading: props.customLoading,
+        height: props.height,
+        onLoad: props.onLoad,
+        onFirstLoad: props.onFirstLoad,
+        onSrcChange: props.onSrcChange,
+      }),
+    )
 
-  const onLoadListeners = useOnLoadListeners(
-    () => lazyImage.src().current().src,
-    props.onLoad,
-    props.onFirstLoad,
-    props.onSrcChange,
-  )
+    return (
+      <div
+        {...elementProps}
+        style={{
+          ...elementProps.style,
+          backgroundImage: loaded ? `url(${resultSrc})` : undefined,
+        }}
+        ref={ref}
+      ></div>
+    )
+  }),
+)
 
-  useEffect(() => {
-    return lazyImage.src().onChange((src) => {
-      if (src.loaded) {
-        onLoadListeners()
-      }
-    })
-  }, [lazyImage])
-
-  const { src, loaded } = useSrc(lazyImage)
-
-  return (
-    <div
-      {...props.div}
-      style={{ ...props.div?.style, backgroundImage: loaded ? `url(${src})` : undefined }}
-      ref={ref}
-    ></div>
-  )
-}
-
-export default memo(LazyBackground)
+export default LazyBackground

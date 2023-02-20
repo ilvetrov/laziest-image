@@ -1,13 +1,11 @@
 import { ReactNode, useCallback, useState } from 'react'
 
-export default function Controlled({
+export default function DataText({
   children,
   defaultShow = true,
-  id,
 }: {
   children: (appendText: (text: string) => void) => ReactNode
   defaultShow?: boolean
-  id: string
 }) {
   const [dataText, setDataText] = useState('')
 

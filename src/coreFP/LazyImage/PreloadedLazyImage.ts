@@ -11,15 +11,16 @@ export function PreloadedLazyImage(origin: ILazyImage): ILazyImage {
       ReactiveMiddleware(
         origin.src(),
         (src) => src,
-        (src) => {
+        (src, onDestroy) => {
           return new Promise((resolve, reject) => {
-            destroyers.add(
-              preloadImage({
-                src,
-                onLoad: () => resolve(src),
-                onError: (error) => reject(error),
-              }),
-            )
+            const destroyer = preloadImage({
+              src,
+              onLoad: () => resolve(src),
+              onError: (error) => reject(error),
+            })
+
+            onDestroy(destroyer)
+            destroyers.add(destroyer)
           })
         },
       ),

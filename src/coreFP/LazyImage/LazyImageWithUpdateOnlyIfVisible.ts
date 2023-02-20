@@ -15,7 +15,7 @@ export function LazyImageWithUpdateOnlyIfVisible(
       ReactiveMiddleware(
         origin.src(),
         (src) => src,
-        (src) => {
+        (src, onDestroy) => {
           return new Promise((resolve) => {
             const observer = new IntersectionObserver(
               (entries) => {
@@ -33,6 +33,7 @@ export function LazyImageWithUpdateOnlyIfVisible(
 
             observer.observe(element())
             destroyers.add(() => observer.disconnect())
+            onDestroy(() => observer.disconnect())
           })
         },
       ),
