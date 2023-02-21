@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
-import LazyBackground from '../../src/componentsFP/LazyBackground'
-import LazyImage from '../../src/componentsFP/LazyImage'
+import LazyBackground from '../../src/components/LazyBackground'
+import LazyImage from '../../src/components/LazyImage'
 import './App.css'
 import DataText from './utils/DataText'
 import { createImages } from './utils/createImages'

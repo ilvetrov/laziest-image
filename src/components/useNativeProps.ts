@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { If } from '../coreFP/If'
+import { If } from '../core/If'
 import { browserSupportsLazyLoading } from './browserSupportsLazyLoading'
 import { LazyImageProps } from './LazyImageProps'
 

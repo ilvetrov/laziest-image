@@ -1,5 +1,5 @@
 import PureHandlers from 'pure-handlers'
-import { isServer } from '../componentsFP/isServer'
+import { isServer } from '../components/isServer'
 
 export function isPageLoaded() {
   return !isServer && document.readyState === 'complete'

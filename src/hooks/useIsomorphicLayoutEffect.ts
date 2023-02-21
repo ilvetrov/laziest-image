@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect } from 'react'
-import { isServer } from '../componentsFP/isServer'
+import { isServer } from '../components/isServer'
 
 const useIsomorphicLayoutEffect = isServer ? useEffect : useLayoutEffect
 

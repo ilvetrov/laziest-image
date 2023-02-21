@@ -1,6 +1,6 @@
 import { DependencyList, useEffect, useState } from 'react'
-import { ILazyImage } from '../../coreFP/LazyImage/LazyImage'
-import { ISrc } from '../../coreFP/Src/Src'
+import { ILazyImage } from '../../core/LazyImage/LazyImage'
+import { ISrc } from '../../core/Src/Src'
 
 const initSrc = { src: '', srcSet: '', sizes: '', loaded: false }
 

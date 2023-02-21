@@ -1,4 +1,4 @@
-import { onLoadListeners } from '../../componentsFP/useOnLoadListeners'
+import { onLoadListeners } from '../../components/useOnLoadListeners'
 import { IOneMemory, OneMemory } from '../Memory/OneMemory'
 import { ReactiveMiddleware } from '../Reactive/ReactiveMiddleware'
 import { ILazyImage } from './LazyImage'

@@ -1,4 +1,4 @@
-import { callAfterPageLoad } from '../../core/callAfterPageLoad'
+import { callAfterPageLoad } from '../callAfterPageLoad'
 import { UniqueDestroyers } from '../Destroyers/UniqueDestroyers'
 import { ILazyImage } from './LazyImage'
 
