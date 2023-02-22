@@ -35,7 +35,7 @@ const LazyBackground = memo(
     },
     userRef,
   ) {
-    const props: LazyBackgroundProps = {
+    const props: LazyImageProps = {
       src,
       srcSet,
       sizes,
