@@ -9,9 +9,9 @@ import { LazyImageInVisibleArea } from '../core/LazyImage/LazyImageInVisibleArea
 import { LazyImageVirtual } from '../core/LazyImage/LazyImageVirtual'
 import { LazyImageWithUpdateOnlyIfVisible } from '../core/LazyImage/LazyImageWithUpdateOnlyIfVisible'
 import { PreloadedLazyImage } from '../core/LazyImage/PreloadedLazyImage'
+import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
 import { OneMemory } from '../core/Memory/OneMemory'
 import { NonNullable } from '../core/NonNullable/NonNullable'
-import { LazyImageProps } from './LazyImageProps'
 
 const initSrc = { src: '', srcSet: '', sizes: '', loaded: false }
 
@@ -49,29 +49,29 @@ export function useLazyImage(
             LazyImageInVisibleArea(
               origin,
               () => NonNullable(ref.current),
-              props.customLoading?.yOffset,
-              props.customLoading?.xOffset,
+              props.yOffset,
+              props.xOffset,
             ),
           props.customLoading,
         ],
-        [BlankedLazyImage, !props.customLoading?.withoutBlank && needEmptyInit],
+        [BlankedLazyImage, !props.withoutBlank && needEmptyInit],
         [LazyImageAfterPageLoad, props.afterPageLoad],
-        [PreloadedLazyImage, props.customLoading?.withoutWatchingSrcChange],
+        [PreloadedLazyImage, props.customLoading && props.withoutWatchingSrcChange],
         [
           (origin) =>
             LazyImageWithUpdateOnlyIfVisible(
               origin,
               () => NonNullable(ref.current),
-              props.customLoading?.yOffset,
-              props.customLoading?.xOffset,
+              props.yOffset,
+              props.xOffset,
             ),
-          props.customLoading && !props.customLoading?.withoutWatchingSrcChange,
+          props.customLoading && !props.withoutWatchingSrcChange,
         ],
       ],
       If(
         LazyImageVirtual,
         LazyImage,
-        props.customLoading && !props.customLoading?.withoutWatchingSrcChange,
+        props.customLoading && !props.withoutWatchingSrcChange,
       )(finalSrc, needEmptyInit ? initSrc : finalSrc),
     )
   }, Object.values(props))

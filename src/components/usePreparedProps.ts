@@ -1,5 +1,5 @@
+import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
 import { useStableCallbacksIn } from '../hooks/useStableCallback'
-import { LazyImageProps } from './LazyImageProps'
 
 export function usePreparedProps(rawProps: LazyImageProps): LazyImageProps {
   return {

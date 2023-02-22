@@ -47,15 +47,3 @@ export function ReactiveOneMemory<T>(origin: IOneMemory<T>): IReactiveOneMemory<
     unsubscribeAll: () => callbacks.clear(),
   }
 }
-
-export function OnlyNewReactiveOneMemory<T>(origin: IReactiveOneMemory<T>): IReactiveOneMemory<T> {
-  return {
-    ...origin,
-
-    write(value) {
-      if (origin.read() !== value) {
-        origin.write(value)
-      }
-    },
-  }
-}

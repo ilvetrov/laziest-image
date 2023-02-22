@@ -5,15 +5,12 @@ export interface LazyImageProps {
   width?: number | string
   height?: number | string
   afterPageLoad?: boolean
-  customLoading?: CustomLoading
-  onLoad?(src: string): void
-  onFirstLoad?(src: string): void
-  onSrcChange?(src: string): void
-}
-
-export interface CustomLoading {
+  customLoading?: boolean
   yOffset?: string
   xOffset?: string
   withoutBlank?: boolean
   withoutWatchingSrcChange?: boolean
+  onLoad?(src: string): void
+  onFirstLoad?(src: string): void
+  onSrcChange?(src: string): void
 }

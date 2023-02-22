@@ -1,7 +1,7 @@
-import React, { forwardRef, memo, useMemo } from 'react'
+import React, { forwardRef, memo } from 'react'
+import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
 import useCombinedRef from '../hooks/useCombinedRef'
 import { useStableCallbacksIn } from '../hooks/useStableCallback'
-import { LazyImageProps } from './LazyImageProps'
 import { useLazyImage } from './useLazyImage'
 import { useNativeProps } from './useNativeProps'
 import { useOnLoadListeners, useOnLoadListenersOnlyOnLoaded } from './useOnLoadListeners'
@@ -23,6 +23,10 @@ const LazyImage = memo(
       height,
       afterPageLoad,
       customLoading,
+      withoutBlank,
+      withoutWatchingSrcChange,
+      xOffset,
+      yOffset,
       onLoad,
       onFirstLoad,
       onSrcChange,
@@ -39,14 +43,11 @@ const LazyImage = memo(
       width,
       height,
       afterPageLoad,
-      customLoading: useMemo(
-        () =>
-          customLoading && {
-            withoutWatchingSrcChange: true,
-            ...customLoading,
-          },
-        [customLoading],
-      ),
+      withoutWatchingSrcChange: withoutWatchingSrcChange ?? true,
+      withoutBlank,
+      customLoading,
+      xOffset,
+      yOffset,
       ...useStableCallbacksIn({
         onLoad,
         onFirstLoad,
@@ -54,20 +55,7 @@ const LazyImage = memo(
       }),
     }
 
-    const { src, srcSet, sizes, loaded } = useSrc(
-      useLazyImage(
-        ref,
-        useNativeProps({
-          src: props.src,
-          sizes: props.sizes,
-          srcSet: props.srcSet,
-          width: props.width,
-          afterPageLoad: props.afterPageLoad,
-          customLoading: props.customLoading,
-          height: props.height,
-        }),
-      ),
-    )
+    const { src, srcSet, sizes, loaded } = useSrc(useLazyImage(ref, useNativeProps(props)))
 
     return (
       <img

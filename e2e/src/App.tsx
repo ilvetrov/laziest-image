@@ -107,6 +107,24 @@ function App() {
         }
       </DataText>
 
+      <h2>Custom with srcSet</h2>
+      <DataText>
+        {(appendText) =>
+          createImages('custom-with-src-set', 1).map((image) => (
+            <LazyImage
+              key={image.id}
+              src={image.src}
+              srcSet={`${image.src}?w=200 200w, ${image.src}?w=500 500w, ${image.src} 1000w`}
+              sizes="(max-width: 500px) 10px, (max-width: 1000px) 250px, 100vw"
+              onLoad={useCallback((src: string) => appendText(`load: ${src}`), [])}
+              onFirstLoad={useCallback((src: string) => appendText(`firstLoad: ${src}`), [])}
+              onSrcChange={useCallback((src: string) => appendText(`srcChange: ${src}`), [])}
+              customLoading
+            ></LazyImage>
+          ))
+        }
+      </DataText>
+
       <h2>Background with srcSet</h2>
       <DataText>
         {(appendText) =>
@@ -172,6 +190,7 @@ function App() {
                     onSrcChange={useCallback((src: string) => appendText(`srcChange: ${src}`), [])}
                     width={image.width}
                     height={image.height}
+                    customLoading
                   ></LazyImage>
                 ))}
                 <button

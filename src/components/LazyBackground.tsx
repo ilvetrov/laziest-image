@@ -1,7 +1,7 @@
-import React, { forwardRef, memo, useMemo } from 'react'
+import React, { forwardRef, memo } from 'react'
+import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
 import useCombinedRef from '../hooks/useCombinedRef'
 import { useStableCallbacksIn } from '../hooks/useStableCallback'
-import { LazyImageProps } from './LazyImageProps'
 import { useLazyImage } from './useLazyImage'
 import { useSrc } from './useSrc'
 
@@ -24,6 +24,10 @@ const LazyBackground = memo(
       height,
       afterPageLoad,
       customLoading,
+      withoutBlank,
+      withoutWatchingSrcChange,
+      xOffset,
+      yOffset,
       onLoad,
       onFirstLoad,
       onSrcChange,
@@ -38,13 +42,11 @@ const LazyBackground = memo(
       width,
       height,
       afterPageLoad,
-      customLoading: useMemo(
-        () => ({
-          withoutBlank: true,
-          ...customLoading,
-        }),
-        [customLoading],
-      ),
+      customLoading: customLoading ?? true,
+      withoutBlank: withoutBlank ?? true,
+      withoutWatchingSrcChange,
+      xOffset,
+      yOffset,
       ...useStableCallbacksIn({
         onLoad,
         onFirstLoad,
@@ -54,20 +56,7 @@ const LazyBackground = memo(
 
     const ref = useCombinedRef(userRef)
 
-    const { src: resultSrc, loaded } = useSrc(
-      useLazyImage(ref, {
-        src: props.src,
-        sizes: props.sizes,
-        srcSet: props.srcSet,
-        width: props.width,
-        afterPageLoad: props.afterPageLoad,
-        customLoading: props.customLoading,
-        height: props.height,
-        onLoad: props.onLoad,
-        onFirstLoad: props.onFirstLoad,
-        onSrcChange: props.onSrcChange,
-      }),
-    )
+    const { src: resultSrc, loaded } = useSrc(useLazyImage(ref, props))
 
     return (
       <div
