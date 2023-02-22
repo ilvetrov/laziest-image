@@ -48,12 +48,13 @@ const LazyImage = memo(
       customLoading,
       xOffset,
       yOffset,
-      ...useStableCallbacksIn({
-        onLoad,
-        onFirstLoad,
-        onSrcChange,
-      }),
     }
+
+    const stableLoadListeners = useStableCallbacksIn({
+      onLoad,
+      onFirstLoad,
+      onSrcChange,
+    })
 
     const { src, srcSet, sizes, loaded } = useSrc(useLazyImage(ref, useNativeProps(props)))
 
@@ -69,9 +70,9 @@ const LazyImage = memo(
         onLoad={useOnLoadListenersOnlyOnLoaded(
           useOnLoadListeners(
             () => ref.current?.currentSrc,
-            props.onLoad,
-            props.onFirstLoad,
-            props.onSrcChange,
+            stableLoadListeners.onLoad,
+            stableLoadListeners.onFirstLoad,
+            stableLoadListeners.onSrcChange,
           ),
           loaded,
         )}
