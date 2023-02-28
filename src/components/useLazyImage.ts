@@ -6,12 +6,11 @@ import { ILazyImage, LazyImage } from '../core/LazyImage/LazyImage'
 import { LazyImageAfterPageLoad } from '../core/LazyImage/LazyImageAfterPageLoad'
 import { LazyImageEvents } from '../core/LazyImage/LazyImageEvents'
 import { LazyImageInVisibleArea } from '../core/LazyImage/LazyImageInVisibleArea'
-import { LazyImageVirtual } from '../core/LazyImage/LazyImageVirtual'
 import { LazyImageWithUpdateOnlyIfVisible } from '../core/LazyImage/LazyImageWithUpdateOnlyIfVisible'
-import { PreloadedLazyImage } from '../core/LazyImage/PreloadedLazyImage'
+import { VirtualImage } from '../core/LazyImage/VirtualImage'
 import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
 import { OneMemory } from '../core/Memory/OneMemory'
-import { NonNullable } from '../core/NonNullable/NonNullable'
+import { NonNullableValue } from '../core/NonNullable/NonNullableValue'
 
 const initSrc = { src: '', srcSet: '', sizes: '', loaded: false }
 
@@ -48,7 +47,7 @@ export function useLazyImage(
           (origin) =>
             LazyImageInVisibleArea(
               origin,
-              () => NonNullable(ref.current),
+              () => NonNullableValue(ref.current),
               props.yOffset,
               props.xOffset,
             ),
@@ -56,12 +55,11 @@ export function useLazyImage(
         ],
         [BlankedLazyImage, !props.withoutBlank && needEmptyInit],
         [LazyImageAfterPageLoad, props.afterPageLoad],
-        [PreloadedLazyImage, props.customLoading && props.withoutWatchingSrcChange],
         [
           (origin) =>
             LazyImageWithUpdateOnlyIfVisible(
               origin,
-              () => NonNullable(ref.current),
+              () => NonNullableValue(ref.current),
               props.yOffset,
               props.xOffset,
             ),
@@ -69,10 +67,10 @@ export function useLazyImage(
         ],
       ],
       If(
-        LazyImageVirtual,
-        LazyImage,
-        props.customLoading && !props.withoutWatchingSrcChange,
-      )(finalSrc, needEmptyInit ? initSrc : finalSrc),
+        () => VirtualImage(finalSrc, !props.withoutWatchingSrcChange),
+        () => LazyImage(finalSrc, needEmptyInit ? initSrc : finalSrc),
+        props.customLoading,
+      )(),
     )
   }, Object.values(props))
 }
