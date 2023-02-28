@@ -1,6 +1,6 @@
 {
   "name": "laziest-image",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Lazy loading image and background in React with user-centric performance and full developer control",
   "author": "ilvetrov",
   "license": "Apache-2.0",
