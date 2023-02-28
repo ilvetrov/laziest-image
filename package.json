@@ -33,17 +33,6 @@
     "e2e-server:no-output": "cd e2e; npm run dev > /dev/null",
     "prepublishOnly": "yarn build"
   },
-  "jest": {
-    "transform": {
-      ".(ts|tsx)": "ts-jest"
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "testEnvironment": "jsdom"
-  },
   "peerDependencies": {
     "react": ">= 16.8.0",
     "react-dom": ">= 16.8.0"
@@ -83,13 +72,13 @@
     "dist"
   ],
   "keywords": [
-    "react",
-    "react 18",
-    "react hook"
+    "lazy image",
+    "lazy background",
+    "image",
+    "background",
+    "react"
   ],
   "dependencies": {
-    "local-sync-state": "^2.0.0",
-    "pure-handlers": "^3.2.0",
-    "use-effect-without-mount": "^1.0.1"
+    "pure-handlers": "^3.2.0"
   }
 }
