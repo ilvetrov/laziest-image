@@ -1,37 +1,74 @@
 import React, { forwardRef, memo } from 'react'
-import { ImageProps, imagePropsKeys } from '../core/ImageProps'
-import omitObjectKeys from '../core/omitObjectKeys'
+import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
 import useCombinedRef from '../hooks/useCombinedRef'
-import useLazyImage from '../hooks/useLazyImage'
+import { useStableCallbacksIn } from '../hooks/useStableCallback'
+import { useLazyImage } from './useLazyImage'
+import { useSrc } from './useSrc'
 
-interface LazyBackgroundOwnProps extends Omit<ImageProps, 'width' | 'height'> {
-  style?: Omit<React.CSSProperties, 'backgroundImage' | 'background'>
-}
+type LazyBackgroundProps = LazyImageProps &
+  Omit<
+    React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
+    keyof LazyImageProps | 'style'
+  > & {
+    // eslint-disable-next-line react/no-unused-prop-types
+    style?: Omit<React.CSSProperties, 'backgroundImage' | 'background'>
+  }
 
-interface LazyBackgroundProps
-  extends LazyBackgroundOwnProps,
-    Omit<
-      React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
-      keyof LazyBackgroundOwnProps
-    > {}
-
-const LazyBackground = forwardRef<HTMLDivElement, LazyBackgroundProps>((props, parentRef) => {
-  const ref = useCombinedRef(parentRef)
-  const { readySrc, loaded } = useLazyImage(ref, {
-    ...props,
-    customLoading: {
-      ...props.customLoading,
-      withoutBlank: true,
+const LazyBackground = memo(
+  forwardRef<HTMLDivElement, LazyBackgroundProps>(function LazyBackground(
+    {
+      src,
+      srcSet,
+      sizes,
+      width,
+      height,
+      afterPageLoad,
+      customLoading,
+      withoutBlank,
+      withoutWatchingSrcChange,
+      xOffset,
+      yOffset,
+      onLoad,
+      onFirstLoad,
+      onSrcChange,
+      ...elementProps
     },
-  })
+    userRef,
+  ) {
+    const props: LazyImageProps = {
+      src,
+      srcSet,
+      sizes,
+      width,
+      height,
+      afterPageLoad,
+      customLoading: customLoading ?? true,
+      withoutBlank: withoutBlank ?? true,
+      withoutWatchingSrcChange,
+      xOffset,
+      yOffset,
+      ...useStableCallbacksIn({
+        onLoad,
+        onFirstLoad,
+        onSrcChange,
+      }),
+    }
 
-  return (
-    <div
-      {...omitObjectKeys(props, imagePropsKeys as (keyof LazyBackgroundProps)[])}
-      style={{ ...props.style, backgroundImage: loaded ? `url(${readySrc})` : undefined }}
-      ref={ref}
-    ></div>
-  )
-})
+    const ref = useCombinedRef(userRef)
 
-export default memo(LazyBackground)
+    const { src: resultSrc, loaded } = useSrc(useLazyImage(ref, props))
+
+    return (
+      <div
+        {...elementProps}
+        style={{
+          ...elementProps.style,
+          backgroundImage: loaded ? `url(${resultSrc})` : undefined,
+        }}
+        ref={ref}
+      ></div>
+    )
+  }),
+)
+
+export default LazyBackground

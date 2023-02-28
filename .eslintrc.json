@@ -108,7 +108,11 @@
     "consistent-return": "off",
     "jsx-a11y/alt-text": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
-    "react/no-array-index-key": "off"
+    "react/no-array-index-key": "off",
+    "class-methods-use-this": "off",
+    "func-names": "off",
+    "react/prop-types": "off",
+    "prefer-arrow-callback": "off"
   },
   "overrides": [
     {
@@ -117,7 +121,8 @@
         "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
         "global-require": "off",
         "import/no-relative-packages": "off",
-        "no-console": "off"
+        "no-console": "off",
+        "max-classes-per-file": "off"
       }
     },
     {
