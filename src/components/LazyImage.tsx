@@ -1,7 +1,7 @@
 import React, { forwardRef, memo } from 'react'
+import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
 import { defaultProps } from '../core/Props/defaultProps'
 import { omitObject } from '../core/Props/omitObject'
-import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
 import useCombinedRef from '../hooks/useCombinedRef'
 import { useLazyImageProps } from '../hooks/useLazyImageProps'
 import { useLazyImage } from './useLazyImage'

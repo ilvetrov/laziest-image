@@ -4,7 +4,7 @@ import { useStableCallbacksIn } from './useStableCallback'
 
 export function useLazyImageProps<
   InputProps extends LazyImageProps & Record<string | number | symbol, any>,
->(userProps: InputProps): [LazyImageProps, Omit<InputProps, keyof LazyImageProps>] {
+>(userProps: InputProps) {
   const ownProps = lazyImageProps({
     ...userProps,
     ...useStableCallbacksIn({
@@ -18,5 +18,5 @@ export function useLazyImageProps<
     Object.keys(ownProps) as ReadonlyArray<keyof typeof ownProps>,
   )
 
-  return [ownProps, restProps]
+  return [ownProps, restProps] as const
 }
