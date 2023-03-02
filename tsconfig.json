@@ -6,7 +6,7 @@
     "lib": ["dom", "esnext"],
     "allowJs": false,
     "jsx": "react",
-    "declaration": false,
+    "declaration": true,
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,

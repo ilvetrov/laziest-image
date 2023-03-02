@@ -21,7 +21,7 @@ export function useLazyImage(
   const didFirstLoad = useMemo(() => OneMemory(false), [])
 
   return useMemo(() => {
-    const needEmptyInit = Boolean(props.afterPageLoad || props.customLoading)
+    const needEmptyInit = Boolean(props.afterPageLoad || props.customLoading) && !props.priority
 
     const finalSrc = {
       src: props.src,
@@ -51,7 +51,7 @@ export function useLazyImage(
               props.yOffset,
               props.xOffset,
             ),
-          props.customLoading,
+          props.customLoading && !props.priority,
         ],
         [BlankedLazyImage, !props.withoutBlank && needEmptyInit],
         [LazyImageAfterPageLoad, props.afterPageLoad],
@@ -63,13 +63,13 @@ export function useLazyImage(
               props.yOffset,
               props.xOffset,
             ),
-          props.customLoading && !props.withoutWatchingSrcChange,
+          props.customLoading && !props.withoutWatchingSrcChange && !props.priority,
         ],
       ],
       If(
         () => VirtualImage(finalSrc, !props.withoutWatchingSrcChange),
         () => LazyImage(finalSrc, needEmptyInit ? initSrc : finalSrc),
-        props.customLoading && !props.disabledPreload,
+        props.customLoading && !props.disabledPreload && !props.priority,
       )(),
     )
   }, Object.values(props))

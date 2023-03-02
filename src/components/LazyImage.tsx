@@ -39,6 +39,7 @@ const LazyImage = memo(
         'afterPageLoad',
         'customLoading',
         'withoutBlank',
+        'priority',
         'withoutWatchingSrcChange',
         'xOffset',
         'yOffset',
@@ -62,6 +63,11 @@ const LazyImage = memo(
 
     return (
       <img
+        {...(lazyConfig.content().priority
+          ? {
+              fetchpriority: 'high',
+            }
+          : {})}
         {...elementConfig.content()}
         ref={ref}
         src={src || undefined}
@@ -78,8 +84,13 @@ const LazyImage = memo(
           ),
           loaded,
         )}
-        loading="lazy"
-        decoding="async"
+        loading={lazyConfig.content().priority ? undefined : 'lazy'}
+        decoding={lazyConfig.content().priority ? undefined : 'async'}
+        style={
+          lazyConfig.content().priority
+            ? {}
+            : { contentVisibility: 'auto', ...elementConfig.content().style }
+        }
       />
     )
   }),

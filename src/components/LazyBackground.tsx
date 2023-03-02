@@ -36,6 +36,7 @@ const LazyBackground = memo(
             'afterPageLoad',
             'customLoading',
             'withoutBlank',
+            'priority',
             'withoutWatchingSrcChange',
             'xOffset',
             'yOffset',
@@ -61,6 +62,7 @@ const LazyBackground = memo(
       <div
         {...elementConfig.content()}
         style={{
+          ...(lazyConfig.content().priority ? {} : { contentVisibility: 'auto' }),
           ...elementConfig.content().style,
           backgroundImage: loaded ? `url(${resultSrc})` : undefined,
         }}

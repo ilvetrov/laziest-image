@@ -6,6 +6,7 @@ export interface LazyImageProps {
   height?: number | string
   afterPageLoad?: boolean
   withoutBlank?: boolean
+  priority?: boolean
   onLoad?(src: string): void
   onFirstLoad?(src: string): void
   onSrcChange?(src: string): void
