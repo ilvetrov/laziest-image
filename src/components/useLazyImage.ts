@@ -69,7 +69,7 @@ export function useLazyImage(
       If(
         () => VirtualImage(finalSrc, !props.withoutWatchingSrcChange),
         () => LazyImage(finalSrc, needEmptyInit ? initSrc : finalSrc),
-        props.customLoading,
+        props.customLoading && !props.disabledPreload,
       )(),
     )
   }, Object.values(props))

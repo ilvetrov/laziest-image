@@ -24,4 +24,8 @@ export interface LazyImageProps {
    * Only for Custom Loading.
    */
   withoutWatchingSrcChange?: boolean
+  /**
+   * Only for Custom Loading.
+   */
+  disabledPreload?: boolean
 }

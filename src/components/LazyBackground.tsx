@@ -1,4 +1,9 @@
 import React, { forwardRef, memo } from 'react'
+import { Cached } from '../core/Cached/Cached'
+import { Config } from '../core/Config/Config'
+import { DefaultConfig } from '../core/Config/DefaultConfig'
+import { ExtendedConfig } from '../core/Config/ExtendedConfig'
+import { RestConfig, SlicedConfig } from '../core/Config/SlicedConfig'
 import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
 import useCombinedRef from '../hooks/useCombinedRef'
 import { useStableCallbacksIn } from '../hooks/useStableCallback'
@@ -15,54 +20,48 @@ type LazyBackgroundProps = LazyImageProps &
   }
 
 const LazyBackground = memo(
-  forwardRef<HTMLDivElement, LazyBackgroundProps>(function LazyBackground(
-    {
-      src,
-      srcSet,
-      sizes,
-      width,
-      height,
-      afterPageLoad,
-      customLoading,
-      withoutBlank,
-      withoutWatchingSrcChange,
-      xOffset,
-      yOffset,
-      onLoad,
-      onFirstLoad,
-      onSrcChange,
-      ...elementProps
-    },
-    userRef,
-  ) {
-    const props: LazyImageProps = {
-      src,
-      srcSet,
-      sizes,
-      width,
-      height,
-      afterPageLoad,
-      customLoading: customLoading ?? true,
-      withoutBlank: withoutBlank ?? true,
-      withoutWatchingSrcChange,
-      xOffset,
-      yOffset,
-      ...useStableCallbacksIn({
-        onLoad,
-        onFirstLoad,
-        onSrcChange,
-      }),
-    }
-
+  forwardRef<HTMLDivElement, LazyBackgroundProps>(function LazyBackground(userProps, userRef) {
     const ref = useCombinedRef(userRef)
 
-    const { src: resultSrc, loaded } = useSrc(useLazyImage(ref, props))
+    const userConfig = Config(userProps)
+    const lazyConfig = Cached(
+      DefaultConfig(
+        ExtendedConfig(
+          SlicedConfig(userConfig, [
+            'src',
+            'srcSet',
+            'sizes',
+            'width',
+            'height',
+            'afterPageLoad',
+            'customLoading',
+            'withoutBlank',
+            'withoutWatchingSrcChange',
+            'xOffset',
+            'yOffset',
+            'disabledPreload',
+          ]),
+          useStableCallbacksIn({
+            onLoad: userProps.onLoad,
+            onFirstLoad: userProps.onFirstLoad,
+            onSrcChange: userProps.onSrcChange,
+          }),
+        ),
+        {
+          customLoading: true,
+          withoutBlank: true,
+        },
+      ),
+    )
+    const elementConfig = Cached(RestConfig(userConfig, lazyConfig))
+
+    const { src: resultSrc, loaded } = useSrc(useLazyImage(ref, lazyConfig.content()))
 
     return (
       <div
-        {...elementProps}
+        {...elementConfig.content()}
         style={{
-          ...elementProps.style,
+          ...elementConfig.content().style,
           backgroundImage: loaded ? `url(${resultSrc})` : undefined,
         }}
         ref={ref}

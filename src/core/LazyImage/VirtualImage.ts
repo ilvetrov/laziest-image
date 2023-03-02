@@ -20,7 +20,11 @@ export function VirtualImage(src: ISrc, keepWatching = false): ILazyImage {
       virtualImage.decoding = 'async'
 
       pureHandlers.addEventListener(virtualImage, 'load', () => {
-        controlledSrc.changeValue({ ...src, src: virtualImage.currentSrc, loaded: true })
+        controlledSrc.changeValue({
+          ...src,
+          src: keepWatching ? virtualImage.currentSrc : src.src,
+          loaded: true,
+        })
 
         if (!keepWatching) {
           pureHandlers.destroy()

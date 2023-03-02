@@ -1,4 +1,9 @@
 import React, { forwardRef, memo } from 'react'
+import { Cached } from '../core/Cached/Cached'
+import { Config } from '../core/Config/Config'
+import { DefaultConfig } from '../core/Config/DefaultConfig'
+import { OmitedConfig } from '../core/Config/OmitedConfig'
+import { RestConfig, SlicedConfig } from '../core/Config/SlicedConfig'
 import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
 import useCombinedRef from '../hooks/useCombinedRef'
 import { useStableCallbacksIn } from '../hooks/useStableCallback'
@@ -14,65 +19,62 @@ type LazyImageElementProps = LazyImageProps &
   >
 
 const LazyImage = memo(
-  forwardRef<HTMLImageElement, LazyImageElementProps>(function LazyImage(
-    {
-      src: userSrc,
-      srcSet: userSrcSet,
-      sizes: userSizes,
-      width,
-      height,
-      afterPageLoad,
-      customLoading,
-      withoutBlank,
-      withoutWatchingSrcChange,
-      xOffset,
-      yOffset,
-      onLoad,
-      onFirstLoad,
-      onSrcChange,
-      ...elementProps
-    },
-    userRef,
-  ) {
+  forwardRef<HTMLImageElement, LazyImageElementProps>(function LazyImage(userProps, userRef) {
     const ref = useCombinedRef(userRef)
 
-    const props: LazyImageProps = {
-      src: userSrc,
-      srcSet: userSrcSet,
-      sizes: userSizes,
-      width,
-      height,
-      afterPageLoad,
-      withoutWatchingSrcChange: withoutWatchingSrcChange ?? true,
-      withoutBlank,
-      customLoading,
-      xOffset,
-      yOffset,
-    }
-
-    const stableLoadListeners = useStableCallbacksIn({
-      onLoad,
-      onFirstLoad,
-      onSrcChange,
+    const stableCallbacks = useStableCallbacksIn({
+      onLoad: userProps.onLoad,
+      onFirstLoad: userProps.onFirstLoad,
+      onSrcChange: userProps.onSrcChange,
     })
 
-    const { src, srcSet, sizes, loaded } = useSrc(useLazyImage(ref, useNativeProps(props)))
+    const userConfig = Config(userProps)
+    const noElementConfig = Cached(
+      SlicedConfig(userConfig, [
+        'src',
+        'srcSet',
+        'sizes',
+        'width',
+        'height',
+        'afterPageLoad',
+        'customLoading',
+        'withoutBlank',
+        'withoutWatchingSrcChange',
+        'xOffset',
+        'yOffset',
+        'disabledPreload',
+        'onLoad',
+        'onFirstLoad',
+        'onSrcChange',
+      ]),
+    )
+    const elementConfig = Cached(RestConfig(userConfig, noElementConfig))
+    const lazyConfig = Cached(
+      DefaultConfig(OmitedConfig(noElementConfig, ['onLoad', 'onFirstLoad', 'onSrcChange']), {
+        withoutWatchingSrcChange: true,
+        disabledPreload: true,
+      }),
+    )
+
+    const { src, srcSet, sizes, loaded } = useSrc(
+      useLazyImage(ref, useNativeProps(lazyConfig.content())),
+    )
 
     return (
       <img
-        {...elementProps}
+        {...elementConfig.content()}
         ref={ref}
         src={src || undefined}
         srcSet={srcSet || undefined}
         sizes={sizes || undefined}
-        width={props.width}
-        height={props.height}
+        width={lazyConfig.content().width}
+        height={lazyConfig.content().height}
         onLoad={useOnLoadListenersOnlyOnLoaded(
           useOnLoadListeners(
             () => ref.current?.currentSrc,
-            stableLoadListeners.onLoad,
-            stableLoadListeners.onFirstLoad,
-            stableLoadListeners.onSrcChange,
+            stableCallbacks.onLoad,
+            stableCallbacks.onFirstLoad,
+            stableCallbacks.onSrcChange,
           ),
           loaded,
         )}
