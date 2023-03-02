@@ -1,3 +1,5 @@
+import { OnlyThatProps } from '../Props/OnlyThatProps'
+
 export interface LazyImageProps {
   src: string
   srcSet?: string
@@ -30,3 +32,22 @@ export interface LazyImageProps {
    */
   disabledPreload?: boolean
 }
+
+export const lazyImageProps = OnlyThatProps<LazyImageProps>((origin) => ({
+  src: origin.src,
+  srcSet: origin.srcSet,
+  sizes: origin.sizes,
+  width: origin.width,
+  height: origin.height,
+  afterPageLoad: origin.afterPageLoad,
+  withoutBlank: origin.withoutBlank,
+  priority: origin.priority,
+  onLoad: origin.onLoad,
+  onSrcChange: origin.onSrcChange,
+  onFirstLoad: origin.onFirstLoad,
+  customLoading: origin.customLoading,
+  yOffset: origin.yOffset,
+  xOffset: origin.xOffset,
+  withoutWatchingSrcChange: origin.withoutWatchingSrcChange,
+  disabledPreload: origin.disabledPreload,
+}))

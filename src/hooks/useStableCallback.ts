@@ -1,4 +1,5 @@
-import { useCallback, useRef } from 'react'
+/* eslint-disable @typescript-eslint/ban-types */
+import { useCallback, useMemo, useRef } from 'react'
 
 export function useStableCallback<Callback extends (...args: any) => any>(
   callback?: Callback,
@@ -57,4 +58,42 @@ export function useStableCallbacksIn<
   return stableCallbacks as {
     [Key in keyof Callbacks]: NonNullable<Callbacks[Key]>
   }
+}
+
+export function useStableObject<
+  T extends Record<string | number | symbol, any>,
+  FunctionNames extends ReadonlyArray<keyof T>,
+>(
+  object: T,
+  functions: FunctionNames,
+): Omit<T, FunctionNames[number]> & {
+  [Key in FunctionNames[number]]: ((...args: any) => any) extends T[Key]
+    ? (
+        ...args: Parameters<NonNullable<T[Key]>>
+      ) => undefined extends T[Key]
+        ? ReturnType<NonNullable<T[Key]>> | undefined
+        : null extends T[Key]
+        ? ReturnType<NonNullable<T[Key]>> | null
+        : ReturnType<NonNullable<T[Key]>>
+    : () => T[Key]
+} {
+  const currentObject = useRef(object)
+
+  currentObject.current = object
+
+  return useMemo(() => {
+    const output: Record<string | number | symbol, any> = { ...object }
+
+    functions.forEach((key) => {
+      output[key] = (...args: unknown[]) => {
+        if (typeof currentObject.current[key] === 'function') {
+          return currentObject.current[key]?.(...args)
+        }
+
+        return currentObject.current[key]
+      }
+    })
+
+    return output as any
+  }, [])
 }

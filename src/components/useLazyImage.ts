@@ -8,7 +8,7 @@ import { LazyImageEvents } from '../core/LazyImage/LazyImageEvents'
 import { LazyImageInVisibleArea } from '../core/LazyImage/LazyImageInVisibleArea'
 import { LazyImageWithUpdateOnlyIfVisible } from '../core/LazyImage/LazyImageWithUpdateOnlyIfVisible'
 import { VirtualImage } from '../core/LazyImage/VirtualImage'
-import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
+import { lazyImageProps, LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
 import { OneMemory } from '../core/Memory/OneMemory'
 import { NonNullableValue } from '../core/NonNullable/NonNullableValue'
 
@@ -72,5 +72,5 @@ export function useLazyImage(
         props.customLoading && !props.disabledPreload && !props.priority,
       )(),
     )
-  }, Object.values(props))
+  }, Object.values(lazyImageProps(props)))
 }
