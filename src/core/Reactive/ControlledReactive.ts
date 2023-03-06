@@ -1,4 +1,4 @@
-import { OneMemory, ReactiveOneMemory } from '../Memory/OneMemory'
+import { Memory, ReactiveMemory } from '../Memory/Memory'
 import { IReactive } from './Reactive'
 
 export interface IControlledReactive<T> extends IReactive<T> {
@@ -8,7 +8,7 @@ export interface IControlledReactive<T> extends IReactive<T> {
 }
 
 export function ControlledReactive<T>(initValue: T): IControlledReactive<T> {
-  const memory = ReactiveOneMemory(OneMemory(initValue))
+  const memory = ReactiveMemory(Memory(initValue))
 
   return {
     current: () => memory.read(),

@@ -1,4 +1,4 @@
-export interface IOneMemory<T> {
+export interface IMemory<T> {
   read(): T
   write(value: T): void
   reset(): void
@@ -7,15 +7,15 @@ export interface IOneMemory<T> {
 type Callback<Value> = (value: Value) => void
 type Unsubscribe = () => void
 
-export interface IReactiveOneMemory<T> extends IOneMemory<T> {
+export interface IReactiveMemory<T> extends IMemory<T> {
   onUpdate(callback: Callback<T>): Unsubscribe
   unsubscribeAll(): void
 }
 
-export function OneMemory<T>(): IOneMemory<T | undefined>
-export function OneMemory<T>(defaultContent: T): IOneMemory<T>
+export function Memory<T>(): IMemory<T | undefined>
+export function Memory<T>(defaultContent: T): IMemory<T>
 
-export function OneMemory<T>(defaultContent?: T): IOneMemory<T | undefined> {
+export function Memory<T>(defaultContent?: T): IMemory<T | undefined> {
   let content = defaultContent
 
   return {
@@ -25,7 +25,7 @@ export function OneMemory<T>(defaultContent?: T): IOneMemory<T | undefined> {
   }
 }
 
-export function ReactiveOneMemory<T>(origin: IOneMemory<T>): IReactiveOneMemory<T> {
+export function ReactiveMemory<T>(origin: IMemory<T>): IReactiveMemory<T> {
   const callbacks = new Set<Callback<T>>()
 
   return {

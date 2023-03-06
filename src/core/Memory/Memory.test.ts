@@ -1,14 +1,14 @@
-import { OneMemory, ReactiveOneMemory } from './OneMemory'
+import { Memory, ReactiveMemory } from './Memory'
 
-describe('OneMemory', () => {
+describe('Memory', () => {
   it('keeps data', () => {
-    const number = OneMemory(0)
+    const number = Memory(0)
 
     expect(number.read()).toBe(0)
   })
 
   it('can write', () => {
-    const number = OneMemory(0)
+    const number = Memory(0)
 
     number.write(1)
 
@@ -16,7 +16,7 @@ describe('OneMemory', () => {
   })
 
   it('can reset', () => {
-    const number = OneMemory(0)
+    const number = Memory(0)
 
     number.write(1)
     number.reset()
@@ -25,9 +25,9 @@ describe('OneMemory', () => {
   })
 })
 
-describe('ReactiveOneMemory', () => {
+describe('ReactiveMemory', () => {
   it('can write', () => {
-    const number = ReactiveOneMemory(OneMemory(0))
+    const number = ReactiveMemory(Memory(0))
 
     number.write(1)
 
@@ -35,7 +35,7 @@ describe('ReactiveOneMemory', () => {
   })
 
   it('can subscribe', () => {
-    const number = ReactiveOneMemory(OneMemory(0))
+    const number = ReactiveMemory(Memory(0))
 
     let calledNumber = 0
 
@@ -46,7 +46,7 @@ describe('ReactiveOneMemory', () => {
   })
 
   it('can unsubscribe', () => {
-    const number = ReactiveOneMemory(OneMemory(0))
+    const number = ReactiveMemory(Memory(0))
 
     let calledNumber = 0
 

@@ -1,5 +1,5 @@
 import { onLoadListeners } from '../../components/useOnLoadListeners'
-import { IOneMemory, OneMemory } from '../Memory/OneMemory'
+import { IMemory, Memory } from '../Memory/Memory'
 import { ReactiveMiddleware } from '../Reactive/ReactiveMiddleware'
 import { ILazyImage } from './LazyImage'
 
@@ -8,9 +8,9 @@ export function LazyImageEvents(
   onLoad?: (src: string) => void,
   onFirstLoad?: (src: string) => void,
   onSrcChange?: (src: string) => void,
-  didFirstLoadFromUser?: IOneMemory<boolean>,
+  didFirstLoadFromUser?: IMemory<boolean>,
 ): ILazyImage {
-  const didFirstLoad = didFirstLoadFromUser ?? OneMemory(false)
+  const didFirstLoad = didFirstLoadFromUser ?? Memory(false)
 
   function callOnFirstLoad(newSrc: string) {
     didFirstLoad.write(true)
