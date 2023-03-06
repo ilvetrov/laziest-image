@@ -1,14 +1,15 @@
 import { InVisibleArea } from '../Action/InVisibleArea'
 import { OnCommonDestroy } from '../Destroyers/CommonDestroyers'
 import { Destroyers } from '../Destroyers/Destroyers'
+import { Offset } from '../LazyImageProps/LazyImageProps'
 import { ReactiveMiddleware } from '../Reactive/ReactiveMiddleware'
 import { ILazyImage } from './LazyImage'
 
 export function LazyImageWithUpdateOnlyIfVisible(
   origin: ILazyImage,
   element: () => HTMLElement,
-  yOffset?: string,
-  xOffset?: string,
+  yOffset?: Offset,
+  xOffset?: Offset,
 ): ILazyImage {
   const destroyers = Destroyers()
 

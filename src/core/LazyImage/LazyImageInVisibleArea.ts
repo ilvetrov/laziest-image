@@ -1,12 +1,13 @@
 import { InVisibleArea } from '../Action/InVisibleArea'
 import { UniqueDestroyers } from '../Destroyers/UniqueDestroyers'
+import { Offset } from '../LazyImageProps/LazyImageProps'
 import { ILazyImage } from './LazyImage'
 
 export function LazyImageInVisibleArea(
   origin: ILazyImage,
   element: () => HTMLElement,
-  yOffset?: string,
-  xOffset?: string,
+  yOffset?: Offset,
+  xOffset?: Offset,
 ): ILazyImage {
   const destroyers = UniqueDestroyers()
 

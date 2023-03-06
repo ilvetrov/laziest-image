@@ -1,5 +1,9 @@
 import { OnlyThatProps } from '../Props/OnlyThatProps'
 
+export type Offset = `${number}${'%' | 'px'}`
+export const yOffsetDefault: Offset = '200%'
+export const xOffsetDefault: Offset = '50%'
+
 export interface LazyImageProps {
   src: string
   srcSet?: string
@@ -17,12 +21,12 @@ export interface LazyImageProps {
    * Only for Custom Loading.
    * @default "200%"
    */
-  yOffset?: string
+  yOffset?: Offset
   /**
    * Only for Custom Loading.
    * @default "50%"
    */
-  xOffset?: string
+  xOffset?: Offset
   /**
    * Only for Custom Loading.
    */
