@@ -15,7 +15,7 @@ export interface LazyImageProps {
   customLoading?: boolean
   /**
    * Only for Custom Loading.
-   * @default "150%"
+   * @default "200%"
    */
   yOffset?: string
   /**

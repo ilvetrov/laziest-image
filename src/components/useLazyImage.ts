@@ -1,5 +1,5 @@
 import { MutableRefObject, useMemo } from 'react'
-import { DecoratorsChainOptional } from '../core/DecoratorsChain'
+import { DecoratorsChainOptional } from '../core/DecoratorsChain/DecoratorsChain'
 import { If } from '../core/If'
 import { BlankedLazyImage } from '../core/LazyImage/BlankedLazyImage'
 import { ILazyImage, LazyImage } from '../core/LazyImage/LazyImage'

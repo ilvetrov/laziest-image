@@ -55,9 +55,13 @@ const LazyImage = memo(
           ),
           loaded,
         )}
-        loading={props.priority ? undefined : 'lazy'}
-        decoding={props.priority ? undefined : 'async'}
-        style={props.priority ? {} : { contentVisibility: 'auto', ...elementProps.style }}
+        loading={!props.priority ? 'lazy' : undefined}
+        decoding={!props.priority ? 'async' : undefined}
+        style={
+          !props.priority && props.width && props.height
+            ? { contentVisibility: 'auto', ...elementProps.style }
+            : elementProps.style
+        }
       />
     )
   }),
