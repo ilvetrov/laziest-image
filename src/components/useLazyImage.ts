@@ -1,6 +1,6 @@
 import { MutableRefObject, useMemo } from 'react'
 import { DecoratorsChainOptional } from '../core/DecoratorsChain/DecoratorsChain'
-import { If } from '../core/If'
+import { If } from '../core/If/If'
 import { BlankedLazyImage } from '../core/LazyImage/BlankedLazyImage'
 import { ILazyImage, LazyImage } from '../core/LazyImage/LazyImage'
 import { LazyImageAfterPageLoad } from '../core/LazyImage/LazyImageAfterPageLoad'
@@ -67,9 +67,9 @@ export function useLazyImage(
         ],
       ],
       If(
+        props.customLoading && !props.disabledPreload && !props.priority,
         () => VirtualImage(finalSrc, !props.withoutWatchingSrcChange),
         () => LazyImage(finalSrc, needEmptyInit ? initSrc : finalSrc),
-        props.customLoading && !props.disabledPreload && !props.priority,
       )(),
     )
   }, Object.values(lazyImageProps(props)))
