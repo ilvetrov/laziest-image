@@ -14,13 +14,13 @@ function imageFromComponents<Type extends keyof typeof components>(
   amount: number,
   width?: [number, number],
   height?: [number, number],
-): (element: (image: Omit<Image, 'id'>, id: Type) => JSX.Element) => JSX.Element {
+): (element: (image: Omit<Image, 'id'>, id: `${Type}_${number}`) => JSX.Element) => JSX.Element {
   return (element) => {
     return (
       <>
         <h2>{id}</h2>
         {createImages(id, amount, width, height).map((image, index) =>
-          element(image, `${id}_${index}` as Type),
+          element(image, `${id}_${index}`),
         )}
       </>
     )
