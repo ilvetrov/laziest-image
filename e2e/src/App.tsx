@@ -3,8 +3,36 @@ import LazyBackground from '../../src/components/LazyBackground'
 import LazyImage from '../../src/components/LazyImage'
 import './App.css'
 import DataText from './utils/DataText'
-import { createImages } from './utils/createImages'
+import { createImages, Image } from './utils/createImages'
 import WithState from './utils/WithState'
+import { extraWindow } from '../outerCore/outer'
+
+const components = extraWindow.content().components
+
+function imageFromComponents<Type extends keyof typeof components>(
+  id: Type,
+  amount: number,
+  width?: [number, number],
+  height?: [number, number],
+): (element: (image: Omit<Image, 'id'>, id: Type) => JSX.Element) => JSX.Element {
+  return (element) => {
+    return (
+      <>
+        <h2>{id}</h2>
+        {createImages(id, amount, width, height).map((image, index) =>
+          element(image, `${id}_${index}` as Type),
+        )}
+      </>
+    )
+  }
+}
+
+function sizesGet(src: string): { srcSet: string; sizes: string } {
+  return {
+    srcSet: `${src}?w=200 200w, ${src}?w=500 500w, ${src} 1000w`,
+    sizes: "(max-width: 500px) 10px, (max-width: 1000px) 250px, 100vw"
+  }
+}
 
 function App() {
   return (
