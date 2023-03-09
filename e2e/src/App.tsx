@@ -17,7 +17,7 @@ function App() {
           width={image.width}
           height={image.height}
           priority
-        ></LazyImage>
+        />
       ))}
 
       <h2>Priority Background</h2>

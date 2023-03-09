@@ -18,21 +18,21 @@ export interface LazyImageProps {
   onSrcChange?(src: string): void
   customLoading?: boolean
   /**
-   * Only for Custom Loading.
+   * Only for the custom loading.
    * @default "200%"
    */
   yOffset?: Offset
   /**
-   * Only for Custom Loading.
+   * Only for the custom loading.
    * @default "50%"
    */
   xOffset?: Offset
   /**
-   * Only for Custom Loading.
+   * Only for the custom loading.
    */
   withoutWatchingSrcChange?: boolean
   /**
-   * Only for Custom Loading.
+   * Only for the custom loading.
    */
   disabledPreload?: boolean
 }
