@@ -1,5 +1,5 @@
 <p>
-  <img src="https://raw.githubusercontent.com/ilvetrov/laziest-image/ease-of-use/logo.svg" width="260" height="149" />
+  <img src="https://raw.githubusercontent.com/ilvetrov/laziest-image/main/logo.svg" width="260" height="149" />
 </p>
 
 # Laziest image
