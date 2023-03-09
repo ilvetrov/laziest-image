@@ -1,44 +1,43 @@
-/* eslint-disable @typescript-eslint/ban-types */
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useRef } from 'react'
 
-export function useStableCallback<Callback extends (...args: any) => any>(
-  callback?: Callback,
-): NonNullable<Callback> {
+type IUnstableCallback = ((...args: any) => any) | null | undefined | void
+
+type ExistingValue<T> = Exclude<T, undefined | null | void>
+
+type NullToUndefined<T> = null extends T ? Exclude<T, null> | undefined : T
+
+export type IStableCallback<T extends IUnstableCallback> = undefined extends NullToUndefined<T>
+  ? undefined extends ReturnType<ExistingValue<T>>
+    ? ExistingValue<T>
+    : (...args: Parameters<ExistingValue<T>>) => ReturnType<ExistingValue<T>> | undefined
+  : T
+
+export function useStableCallback<Callback extends IUnstableCallback>(callback?: Callback) {
   const ref = useRef(callback)
 
   ref.current = callback
 
-  return useCallback((...args: Parameters<Callback>) => {
+  return useCallback((...args: unknown[]) => {
     return ref.current?.(...args)
-  }, []) as Callback
+  }, []) as IStableCallback<Callback>
 }
 
-export function useStableCallbacks<Callbacks extends (undefined | ((...args: any) => any))[]>(
-  ...callbacks: Callbacks
-) {
+export function useStableCallbacks<Callbacks extends IUnstableCallback[]>(...callbacks: Callbacks) {
   const initNumberOfCallbacks = useRef(callbacks.length)
 
   if (initNumberOfCallbacks.current !== callbacks.length) {
     throw new Error('Provide a stable number of callbacks')
   }
 
-  const stableCallbacks: unknown[] = []
-
-  for (let i = 0; i < callbacks.length; i++) {
-    const callback = callbacks[i]
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    stableCallbacks[i] = useStableCallback(callback)
-  }
-
-  return stableCallbacks as {
-    [Key in keyof Callbacks]: NonNullable<Callbacks[Key]>
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return callbacks.map((callback) => useStableCallback(callback)) as {
+    [Key in keyof Callbacks]: IStableCallback<Callbacks[Key]>
   }
 }
 
-export function useStableCallbacksIn<
-  Callbacks extends Record<string | number | symbol, undefined | ((...args: any) => any)>,
->(callbacks: Callbacks) {
+export function useStableCallbacksIn<Callbacks extends Record<string | symbol, IUnstableCallback>>(
+  callbacks: Callbacks,
+) {
   const currentLength = Object.keys(callbacks).length
   const initNumberOfCallbacks = useRef(currentLength)
 
@@ -46,54 +45,18 @@ export function useStableCallbacksIn<
     throw new Error('Provide a stable number of callbacks')
   }
 
-  const stableCallbacks: Record<string | number | symbol, (...args: any) => any> = {}
+  const stableCallbacks: Record<string | symbol, IUnstableCallback> = {}
 
-  Object.keys(callbacks).forEach((key) => {
-    const callback = callbacks[key]
+  Object.keys(callbacks)
+    .sort()
+    .forEach((key) => {
+      const callback = callbacks[key]
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    stableCallbacks[key] = useStableCallback(callback)
-  })
-
-  return stableCallbacks as {
-    [Key in keyof Callbacks]: NonNullable<Callbacks[Key]>
-  }
-}
-
-export function useStableObject<
-  T extends Record<string | number | symbol, any>,
-  FunctionNames extends ReadonlyArray<keyof T>,
->(
-  object: T,
-  functions: FunctionNames,
-): Omit<T, FunctionNames[number]> & {
-  [Key in FunctionNames[number]]: ((...args: any) => any) extends T[Key]
-    ? (
-        ...args: Parameters<NonNullable<T[Key]>>
-      ) => undefined extends T[Key]
-        ? ReturnType<NonNullable<T[Key]>> | undefined
-        : null extends T[Key]
-        ? ReturnType<NonNullable<T[Key]>> | null
-        : ReturnType<NonNullable<T[Key]>>
-    : () => T[Key]
-} {
-  const currentObject = useRef(object)
-
-  currentObject.current = object
-
-  return useMemo(() => {
-    const output: Record<string | number | symbol, any> = { ...object }
-
-    functions.forEach((key) => {
-      output[key] = (...args: unknown[]) => {
-        if (typeof currentObject.current[key] === 'function') {
-          return currentObject.current[key]?.(...args)
-        }
-
-        return currentObject.current[key]
-      }
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      stableCallbacks[key] = useStableCallback(callback)
     })
 
-    return output as any
-  }, [])
+  return stableCallbacks as {
+    [Key in keyof Callbacks]: IStableCallback<Callbacks[Key]>
+  }
 }
