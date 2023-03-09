@@ -9,15 +9,15 @@ The image loader to give you full control over image load.
 :heart: ...and reduce all annoying work, of course.
 
 ### Benefits
-- :fire: **`srcSet` and `sizes` for background.**
+- [:fire: **`srcSet` and `sizes` for background.**](#srcset-and-sizes)
 - The image behind the screen *horizontally* now only loads when it's visible.
-- No layout shift, just add width and height.
-- Flag `priority` for the LCP element.
-- :x::snowflake: No scroll freezes on background loading.
+- No [layout shift](https://web.dev/cls/), just add width and height.
+- Flag `priority` for [the LCP element](https://web.dev/lcp/).
 - Auto placeholder for all loading images. No gray borders!
+- :x::snowflake: No scroll freezes on background loading.
 - Load events: `onLoad`, `onFirstLoad`, `onSrcChange`.
 - SSR support.
-- Full customization of any load rule.
+- [Full customization of any load rule for you](#properties), thanks to declarative nature under the hood.
 - :zap: **3.7 kB gzipped. No dependencies.**
 
 ### Technical sweets
@@ -46,7 +46,7 @@ yarn add laziest-image
 
 It uses native lazy loading if the browser supports it. If not, custom lazy loading will be used.
 
-```ts
+```tsx
 import { LazyImage } from 'laziest-image'
 
 export function MyComponent() {
@@ -62,7 +62,7 @@ export function MyComponent() {
 
 To force custom loading, just add the flag:
 
-```ts
+```tsx
 import { LazyImage } from 'laziest-image'
 
 export function MyComponent() {
@@ -81,7 +81,7 @@ export function MyComponent() {
 
 Backgrounds are loaded with custom loading by default.
 
-```ts
+```tsx
 import { LazyBackground } from 'laziest-image'
 
 export function MyComponent() {
@@ -97,9 +97,9 @@ export function MyComponent() {
 
 Just use it like inside `<img>`.
 
-*I'm serious, just use it. This will work natively and be controlled by the browser under the hood. The library simply updates `backgroundImage` when the browser changes src due to srcSet and sizes.*
+*I'm serious, just use it. This will work natively and be controlled by the browser under the hood. The library simply updates `backgroundImage` when the browser changes current src due to srcSet and sizes.*
 
-```ts
+```tsx
 import { LazyBackground } from 'laziest-image'
 
 export function MyComponent() {
@@ -163,3 +163,16 @@ This hook is used by the components under the hood. You can use it directly.
 The components are like presets of properties.
 
 *All [properties](#properties) are `false` by default for the `useLazyImage` hook.*
+
+### Hook `useSrc`
+
+This is a great hook to help you subscribe and unsubscribe src updates from the `useLazyImage` hook.
+
+```tsx
+const { src, loaded } = useSrc(useLazyImage(ref, props))
+
+// Until the image is loaded,
+// "loaded" will be false and
+// "src" will be an empty string or with a blank (empty) image,
+// depending on your properties.
+```
