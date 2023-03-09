@@ -1,6 +1,6 @@
 {
   "name": "laziest-image",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "The image loader to give you full control over image load.",
   "author": "ilvetrov",
   "license": "Apache-2.0",
