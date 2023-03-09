@@ -14,13 +14,7 @@ const config = [
       },
     ],
     plugins: [typescript({ exclude: ['**.test.ts', '**.test.tsx'] }), cleanup()],
-    external: [
-      'react',
-      'react-dom',
-      'pure-handlers',
-      'pure-handlers/react',
-      'use-effect-without-mount',
-    ],
+    external: ['react', 'react-dom'],
   },
   {
     input: 'src/index.ts',
@@ -35,13 +29,7 @@ const config = [
       typescript({ declaration: false, exclude: ['**.test.ts', '**.test.tsx'] }),
       cleanup(),
     ],
-    external: [
-      'react',
-      'react-dom',
-      'pure-handlers',
-      'pure-handlers/react',
-      'use-effect-without-mount',
-    ],
+    external: ['react', 'react-dom'],
   },
 ]
 

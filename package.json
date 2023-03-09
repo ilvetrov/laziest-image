@@ -78,7 +78,5 @@
     "background",
     "react"
   ],
-  "dependencies": {
-    "pure-handlers": "^3.2.0"
-  }
+  "dependencies": {}
 }
