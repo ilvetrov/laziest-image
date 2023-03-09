@@ -39,6 +39,8 @@ const LazyImage = memo(
               fetchpriority: 'high',
             }
           : {})}
+        loading={!props.priority ? 'lazy' : undefined}
+        decoding="async"
         {...elementProps}
         ref={ref}
         src={src || undefined}
@@ -55,13 +57,7 @@ const LazyImage = memo(
           ),
           loaded,
         )}
-        loading={!props.priority ? 'lazy' : undefined}
-        decoding={!props.priority ? 'async' : undefined}
-        style={
-          !props.priority && props.width && props.height
-            ? { contentVisibility: 'auto', ...elementProps.style }
-            : elementProps.style
-        }
+        style={{ contentVisibility: 'auto', ...elementProps.style }}
       />
     )
   }),

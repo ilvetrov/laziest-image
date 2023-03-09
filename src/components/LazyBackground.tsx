@@ -1,6 +1,6 @@
 import React, { forwardRef, memo } from 'react'
-import { defaultProps } from '../core/Props/defaultProps'
 import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
+import { defaultProps } from '../core/Props/defaultProps'
 import useCombinedRef from '../hooks/useCombinedRef'
 import { useLazyImageProps } from '../hooks/useLazyImageProps'
 import { useLazyImage } from './useLazyImage'
@@ -31,7 +31,7 @@ const LazyBackground = memo(
       <div
         {...elementProps}
         style={{
-          ...(props.priority ? {} : { contentVisibility: 'auto' }),
+          ...(elementProps.children ? {} : { contentVisibility: 'auto' }),
           ...elementProps.style,
           backgroundImage: loaded ? `url(${resultSrc})` : undefined,
         }}
