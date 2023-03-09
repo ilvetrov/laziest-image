@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
+import { lazyImageProps, LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
 import { browserSupportsLazyLoading } from './browserSupportsLazyLoading'
 
 export function useNativeProps(props: LazyImageProps): LazyImageProps {
@@ -16,6 +16,6 @@ export function useNativeProps(props: LazyImageProps): LazyImageProps {
       ...props,
       customLoading: props.customLoading || forceCustomLoading,
     }),
-    [...Object.values(props), forceCustomLoading],
+    [...Object.values(lazyImageProps(props)), forceCustomLoading],
   )
 }

@@ -1,4 +1,4 @@
-import { callAfterPageLoad } from '../callAfterPageLoad'
+import { AfterPageLoad } from '../Action/AfterPageLoad'
 import { UniqueDestroyers } from '../Destroyers/UniqueDestroyers'
 import { ILazyImage } from './LazyImage'
 
@@ -8,10 +8,7 @@ export function LazyImageAfterPageLoad(origin: ILazyImage): ILazyImage {
   return {
     src: origin.src,
     load() {
-      destroyers.add(
-        'load',
-        callAfterPageLoad(() => origin.load()),
-      )
+      destroyers.add('load', AfterPageLoad(origin.load)())
     },
     unload() {
       destroyers.destroyAll()

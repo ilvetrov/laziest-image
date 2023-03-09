@@ -1,7 +1,7 @@
 {
   "name": "laziest-image",
   "version": "0.2.0",
-  "description": "Lazy loading image and background in React with user-centric performance and full developer control",
+  "description": "The image loader to give you full control over image load.",
   "author": "ilvetrov",
   "license": "Apache-2.0",
   "repository": {
@@ -26,7 +26,7 @@
     "build": "rm -rf ./dist/*; rollup -c",
     "dev": "rollup -c -w",
     "test": "jest --testPathIgnorePatterns=.*e2e.test.tsx?",
-    "test:watch": "jest --watch",
+    "test:watch": "jest --watch --testPathIgnorePatterns=.*e2e.test.tsx?",
     "test:e2e": "npm run e2e-server:no-output & jest --testPathPattern=.*e2e.test.tsx? & wait",
     "test:e2e:watch": "npm run e2e-server:no-output & jest --watch --testPathPattern=.*e2e.test.tsx? & wait",
     "e2e-server": "cd e2e; npm run dev",
@@ -78,7 +78,5 @@
     "background",
     "react"
   ],
-  "dependencies": {
-    "pure-handlers": "^3.2.0"
-  }
+  "dependencies": {}
 }

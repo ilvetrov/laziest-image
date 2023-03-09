@@ -1,7 +1,9 @@
 import React, { forwardRef, memo } from 'react'
 import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
+import { defaultProps } from '../core/Props/defaultProps'
+import { omitObject } from '../core/Props/omitObject'
 import useCombinedRef from '../hooks/useCombinedRef'
-import { useStableCallbacksIn } from '../hooks/useStableCallback'
+import { useLazyImageProps } from '../hooks/useLazyImageProps'
 import { useLazyImage } from './useLazyImage'
 import { useNativeProps } from './useNativeProps'
 import { useOnLoadListeners, useOnLoadListenersOnlyOnLoaded } from './useOnLoadListeners'
@@ -14,52 +16,31 @@ type LazyImageElementProps = LazyImageProps &
   >
 
 const LazyImage = memo(
-  forwardRef<HTMLImageElement, LazyImageElementProps>(function LazyImage(
-    {
-      src: userSrc,
-      srcSet: userSrcSet,
-      sizes: userSizes,
-      width,
-      height,
-      afterPageLoad,
-      customLoading,
-      withoutBlank,
-      withoutWatchingSrcChange,
-      xOffset,
-      yOffset,
-      onLoad,
-      onFirstLoad,
-      onSrcChange,
-      ...elementProps
-    },
-    userRef,
-  ) {
+  forwardRef<HTMLImageElement, LazyImageElementProps>(function LazyImage(userProps, userRef) {
     const ref = useCombinedRef(userRef)
+    const [props, elementProps] = useLazyImageProps(
+      defaultProps(userProps, {
+        withoutWatchingSrcChange: true,
+        disabledPreload: true,
+      }),
+    )
 
-    const props: LazyImageProps = {
-      src: userSrc,
-      srcSet: userSrcSet,
-      sizes: userSizes,
-      width,
-      height,
-      afterPageLoad,
-      withoutWatchingSrcChange: withoutWatchingSrcChange ?? true,
-      withoutBlank,
-      customLoading,
-      xOffset,
-      yOffset,
-    }
-
-    const stableLoadListeners = useStableCallbacksIn({
-      onLoad,
-      onFirstLoad,
-      onSrcChange,
-    })
-
-    const { src, srcSet, sizes, loaded } = useSrc(useLazyImage(ref, useNativeProps(props)))
+    const { src, srcSet, sizes, loaded } = useSrc(
+      useLazyImage(
+        ref,
+        useNativeProps(omitObject(props, ['onLoad', 'onFirstLoad', 'onSrcChange'])),
+      ),
+    )
 
     return (
       <img
+        {...(props.priority
+          ? {
+              fetchpriority: 'high',
+            }
+          : {})}
+        loading={!props.priority ? 'lazy' : undefined}
+        decoding="async"
         {...elementProps}
         ref={ref}
         src={src || undefined}
@@ -70,14 +51,13 @@ const LazyImage = memo(
         onLoad={useOnLoadListenersOnlyOnLoaded(
           useOnLoadListeners(
             () => ref.current?.currentSrc,
-            stableLoadListeners.onLoad,
-            stableLoadListeners.onFirstLoad,
-            stableLoadListeners.onSrcChange,
+            props.onLoad,
+            props.onFirstLoad,
+            props.onSrcChange,
           ),
           loaded,
         )}
-        loading="lazy"
-        decoding="async"
+        style={{ contentVisibility: 'auto', ...elementProps.style }}
       />
     )
   }),

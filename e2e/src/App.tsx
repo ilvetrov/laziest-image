@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import LazyBackground from '../../src/components/LazyBackground'
 import LazyImage from '../../src/components/LazyImage'
 import './App.css'
@@ -9,6 +9,27 @@ import WithState from './utils/WithState'
 function App() {
   return (
     <div className="App">
+      <h2>Priority Default</h2>
+      {createImages('priority-default', 1).map((image, index) => (
+        <LazyImage
+          key={image.id}
+          src={image.src}
+          width={image.width}
+          height={image.height}
+          priority
+        />
+      ))}
+
+      <h2>Priority Background</h2>
+      {createImages('priority-background', 1).map((image, index) => (
+        <LazyBackground
+          key={image.id}
+          src={image.src}
+          priority
+          className="background"
+        ></LazyBackground>
+      ))}
+
       <h2>With sizes</h2>
       {createImages('with-sizes').map((image, index) => (
         <LazyImage

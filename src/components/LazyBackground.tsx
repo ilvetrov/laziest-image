@@ -1,7 +1,8 @@
 import React, { forwardRef, memo } from 'react'
 import { LazyImageProps } from '../core/LazyImageProps/LazyImageProps'
+import { defaultProps } from '../core/Props/defaultProps'
 import useCombinedRef from '../hooks/useCombinedRef'
-import { useStableCallbacksIn } from '../hooks/useStableCallback'
+import { useLazyImageProps } from '../hooks/useLazyImageProps'
 import { useLazyImage } from './useLazyImage'
 import { useSrc } from './useSrc'
 
@@ -15,46 +16,14 @@ type LazyBackgroundProps = LazyImageProps &
   }
 
 const LazyBackground = memo(
-  forwardRef<HTMLDivElement, LazyBackgroundProps>(function LazyBackground(
-    {
-      src,
-      srcSet,
-      sizes,
-      width,
-      height,
-      afterPageLoad,
-      customLoading,
-      withoutBlank,
-      withoutWatchingSrcChange,
-      xOffset,
-      yOffset,
-      onLoad,
-      onFirstLoad,
-      onSrcChange,
-      ...elementProps
-    },
-    userRef,
-  ) {
-    const props: LazyImageProps = {
-      src,
-      srcSet,
-      sizes,
-      width,
-      height,
-      afterPageLoad,
-      customLoading: customLoading ?? true,
-      withoutBlank: withoutBlank ?? true,
-      withoutWatchingSrcChange,
-      xOffset,
-      yOffset,
-      ...useStableCallbacksIn({
-        onLoad,
-        onFirstLoad,
-        onSrcChange,
-      }),
-    }
-
+  forwardRef<HTMLDivElement, LazyBackgroundProps>(function LazyBackground(userProps, userRef) {
     const ref = useCombinedRef(userRef)
+    const [props, elementProps] = useLazyImageProps(
+      defaultProps(userProps, {
+        customLoading: true,
+        withoutBlank: true,
+      }),
+    )
 
     const { src: resultSrc, loaded } = useSrc(useLazyImage(ref, props))
 
@@ -62,6 +31,7 @@ const LazyBackground = memo(
       <div
         {...elementProps}
         style={{
+          ...(elementProps.children ? {} : { contentVisibility: 'auto' }),
           ...elementProps.style,
           backgroundImage: loaded ? `url(${resultSrc})` : undefined,
         }}
