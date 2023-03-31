@@ -3,6 +3,10 @@ import { OnlyThatProps } from '../Props/OnlyThatProps'
 export type Offset = `${number}${'%' | 'px'}`
 export const yOffsetDefault: Offset = '200%'
 export const xOffsetDefault: Offset = '50%'
+export const offsetToNumber = (offset: Offset) =>
+  Number(offset.split((offset.match(/[^\d]+$/g) ?? [])[0] ?? 'px').join(''))
+export const numberToOffset = (number: number, offset: Offset) =>
+  `${number}${(offset.match(/[^\d]+$/g) ?? [])[0] ?? ''}` as Offset
 
 export interface LazyImageProps {
   src: string

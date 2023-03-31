@@ -1,25 +1,23 @@
-import { Destroyers } from '../Destroyers/Destroyers'
+import { Destroyer, Destroyers } from '../Destroyers/Destroyers'
 import { UniqueDestroyers } from '../Destroyers/UniqueDestroyers'
+import { OptionalCallback } from '../Optional/OptionalCallback'
 import { IReactive } from './Reactive'
 
 export function ReactiveMiddleware<T>(
-  origin: IReactive<T>,
+  origin: () => IReactive<T>,
   middleCurrent: (value: T) => T,
-  middleOnChange: (
-    value: T,
-    onDestroy: (callback: () => void) => void,
-  ) => T | Promise<T> = middleCurrent,
-): IReactive<T> {
-  return {
+  middleOnChange?: (value: T, changeValue: (value: T) => void) => Destroyer | void,
+): () => IReactive<T> {
+  return () => ({
     current() {
-      return middleCurrent(origin.current())
+      return middleCurrent(origin().current())
     },
     onChange(callback) {
       const destroyers = UniqueDestroyers()
 
       destroyers.add(
         'originOnChange',
-        origin.onChange(async (value) => {
+        origin().onChange(async (value) => {
           let destroyed = false
 
           destroyers.add('middleOnChange', () => (destroyed = true))
@@ -28,12 +26,19 @@ export function ReactiveMiddleware<T>(
 
           destroyers.add('middleDestroyers', () => middleDestroyers.destroyAll())
 
-          const middlePromise = middleOnChange(value, middleDestroyers.add)
-          const middleValue = middlePromise instanceof Promise ? await middlePromise : middlePromise
+          if (middleOnChange) {
+            middleDestroyers.add(
+              OptionalCallback(
+                middleOnChange(value, (result) => {
+                  if (destroyed) return
 
-          if (destroyed) return
-
-          callback(middleValue)
+                  callback(result)
+                }),
+              ),
+            )
+          } else {
+            callback(middleCurrent(value))
+          }
         }),
       )
 
@@ -41,5 +46,5 @@ export function ReactiveMiddleware<T>(
         destroyers.destroyAll()
       }
     },
-  }
+  })
 }

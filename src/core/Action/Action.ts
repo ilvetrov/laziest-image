@@ -1,18 +1,10 @@
+import { OptionalCallback } from '../Optional/OptionalCallback'
+
 type Cancel = () => void
 
-export type IAction = () => Cancel
-export type ISimpleAction = () => Cancel | void
+export type IActionOrigin = (...args: any) => Cancel | void
+export type IAction<T extends IActionOrigin> = (...args: Parameters<T>) => Cancel
 
-export function Action(action: IAction | ISimpleAction): IAction {
-  return () => {
-    const cancel = action()
-
-    if (cancel) {
-      return cancel
-    }
-
-    return voidFunc
-  }
+export function Action<T extends IActionOrigin>(action: T): IAction<T> {
+  return (...args) => OptionalCallback(action(...args))
 }
-
-function voidFunc() {}

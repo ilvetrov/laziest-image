@@ -4,7 +4,7 @@ import { ILazyImage } from './LazyImage'
 
 export function BlankedLazyImage(origin: ILazyImage): ILazyImage {
   return {
-    src: () => ReactiveMiddleware(origin.src(), BlankedSrc, BlankedSrc),
+    src: ReactiveMiddleware(origin.src, BlankedSrc),
     load: origin.load,
     unload: origin.unload,
   }

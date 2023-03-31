@@ -1,23 +1,26 @@
 import { InVisibleArea } from '../Action/InVisibleArea'
-import { UniqueDestroyers } from '../Destroyers/UniqueDestroyers'
-import { Offset } from '../LazyImageProps/LazyImageProps'
+import { OnlyDestroyer } from '../Destroyers/Destroyable'
+import { UniqueDestroyable } from '../Destroyers/UniqueDestroyable'
+import { Offset, xOffsetDefault, yOffsetDefault } from '../LazyImageProps/LazyImageProps'
 import { ILazyImage } from './LazyImage'
 
 export function LazyImageInVisibleArea(
   origin: ILazyImage,
   element: () => HTMLElement,
-  yOffset?: Offset,
-  xOffset?: Offset,
+  yOffset: Offset = yOffsetDefault,
+  xOffset: Offset = xOffsetDefault,
 ): ILazyImage {
-  const destroyers = UniqueDestroyers()
+  const load = UniqueDestroyable(
+    OnlyDestroyer(InVisibleArea(origin.load, element, yOffset, xOffset)),
+  )
 
   return {
     src: origin.src,
     load() {
-      destroyers.add('load', InVisibleArea(origin.load, element, yOffset, xOffset)())
+      load.run()
     },
     unload() {
-      destroyers.destroyAll()
+      load.destroy()
       origin.unload()
     },
   }

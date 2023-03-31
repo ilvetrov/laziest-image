@@ -21,21 +21,20 @@ export function LazyImageEvents(
   return {
     load: origin.load,
     unload: origin.unload,
-    src: () =>
-      ReactiveMiddleware(
-        origin.src(),
-        (src) => src,
-        (src) => {
-          onLoadListeners(
-            () => src.src,
-            () => didFirstLoad.read(),
-            onLoad,
-            callOnFirstLoad,
-            onSrcChange,
-          )
+    src: ReactiveMiddleware(
+      origin.src,
+      (src) => src,
+      (src, changeValue) => {
+        onLoadListeners(
+          () => src.src,
+          () => didFirstLoad.read(),
+          onLoad,
+          callOnFirstLoad,
+          onSrcChange,
+        )
 
-          return src
-        },
-      ),
+        changeValue(src)
+      },
+    ),
   }
 }

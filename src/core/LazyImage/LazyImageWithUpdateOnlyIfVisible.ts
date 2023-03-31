@@ -1,8 +1,8 @@
 import { InVisibleArea } from '../Action/InVisibleArea'
-import { OnCommonDestroy } from '../Destroyers/CommonDestroyers'
-import { Destroyers } from '../Destroyers/Destroyers'
+import { Destroyable, OnlyDestroyer } from '../Destroyers/Destroyable'
 import { Offset } from '../LazyImageProps/LazyImageProps'
 import { ReactiveMiddleware } from '../Reactive/ReactiveMiddleware'
+import { ISrc } from '../Src/Src'
 import { ILazyImage } from './LazyImage'
 
 export function LazyImageWithUpdateOnlyIfVisible(
@@ -11,26 +11,28 @@ export function LazyImageWithUpdateOnlyIfVisible(
   yOffset?: Offset,
   xOffset?: Offset,
 ): ILazyImage {
-  const destroyers = Destroyers()
+  const onChange = Destroyable(
+    OnlyDestroyer(
+      InVisibleArea(
+        (src: ISrc, changeValue: (value: ISrc) => void) => changeValue(src),
+        element,
+        yOffset,
+        xOffset,
+      ),
+    ),
+  )
 
   return {
-    src: () =>
-      ReactiveMiddleware(
-        origin.src(),
-        (src) => src,
-        (src, onDestroy) => {
-          const onCommonDestroy = OnCommonDestroy(destroyers.add, onDestroy)
-
-          return new Promise((resolve) => {
-            onCommonDestroy(InVisibleArea(() => resolve(src), element, yOffset, xOffset)())
-          })
-        },
-      ),
+    src: ReactiveMiddleware(
+      origin.src,
+      (src) => src,
+      (value, changeValue) => onChange.run(value, changeValue).destroy,
+    ),
     load() {
       origin.load()
     },
     unload() {
-      destroyers.destroyAll()
+      onChange.destroy()
       origin.unload()
     },
   }

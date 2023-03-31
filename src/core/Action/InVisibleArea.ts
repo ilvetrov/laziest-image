@@ -1,20 +1,23 @@
-import { UniqueDestroyers } from '../Destroyers/UniqueDestroyers'
+import { OnlyDestroyer } from '../Destroyers/Destroyable'
+import { UniqueDestroyable } from '../Destroyers/UniqueDestroyable'
 import { xOffsetDefault, yOffsetDefault } from '../LazyImageProps/LazyImageProps'
-import { Action, IAction, ISimpleAction } from './Action'
+import { Action, IAction, IActionOrigin } from './Action'
 
-export function InVisibleArea(
-  action: ISimpleAction,
+export function InVisibleArea<T extends IActionOrigin>(
+  action: T,
   element: () => HTMLElement,
   yOffset = yOffsetDefault,
   xOffset = xOffsetDefault,
-): IAction {
-  return () => {
-    const destroyers = UniqueDestroyers()
+): IAction<T> {
+  return (...args) => {
+    console.log('BIBA', yOffset, xOffset)
+
+    const destroyableAction = UniqueDestroyable(OnlyDestroyer(Action(action)))
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          destroyers.add('action', Action(action)())
+          destroyableAction.run(...args)
           observer.disconnect()
         }
       },
@@ -24,10 +27,10 @@ export function InVisibleArea(
     )
 
     observer.observe(element())
-    destroyers.add('observer', () => observer.disconnect())
 
     return () => {
-      destroyers.destroyAll()
+      observer.disconnect()
+      destroyableAction.destroy()
     }
   }
 }

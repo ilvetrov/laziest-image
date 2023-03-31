@@ -1,17 +1,18 @@
 import { AfterPageLoad } from '../Action/AfterPageLoad'
-import { UniqueDestroyers } from '../Destroyers/UniqueDestroyers'
+import { OnlyDestroyer } from '../Destroyers/Destroyable'
+import { UniqueDestroyable } from '../Destroyers/UniqueDestroyable'
 import { ILazyImage } from './LazyImage'
 
 export function LazyImageAfterPageLoad(origin: ILazyImage): ILazyImage {
-  const destroyers = UniqueDestroyers()
+  const load = UniqueDestroyable(OnlyDestroyer(AfterPageLoad(origin.load)))
 
   return {
     src: origin.src,
     load() {
-      destroyers.add('load', AfterPageLoad(origin.load)())
+      load.run()
     },
     unload() {
-      destroyers.destroyAll()
+      load.destroy()
       origin.unload()
     },
   }

@@ -1,36 +1,33 @@
 import { isServer } from '../../components/isServer'
-import { UniqueDestroyers } from '../Destroyers/UniqueDestroyers'
-import { Action, IAction, ISimpleAction } from './Action'
+import { OnlyDestroyer } from '../Destroyers/Destroyable'
+import { UniqueDestroyable } from '../Destroyers/UniqueDestroyable'
+import { Action, IAction, IActionOrigin } from './Action'
 
 export function isPageLoaded() {
   return !isServer && document.readyState === 'complete'
 }
 
-export function AfterPageLoad(action: ISimpleAction): IAction {
-  return () => {
+export function AfterPageLoad<T extends IActionOrigin>(origin: T): IAction<T> {
+  return (...args) => {
     if (isServer) {
       return () => {}
     }
 
-    if (isPageLoaded()) {
-      const cancel = action()
+    const action = UniqueDestroyable(OnlyDestroyer(Action(origin)))
 
-      return () => {
-        cancel?.()
-      }
+    if (isPageLoaded()) {
+      return action.run(...args).destroy
     }
 
-    const destroyers = UniqueDestroyers()
-
     function actionAfterLoad() {
-      destroyers.add('actionAfterLoad', Action(action)())
+      action.run(...args)
     }
 
     window.addEventListener('load', actionAfterLoad)
-    destroyers.add('load', () => window.removeEventListener('load', actionAfterLoad))
 
     return () => {
-      destroyers.destroyAll()
+      action.destroy()
+      window.removeEventListener('load', actionAfterLoad)
     }
   }
 }
