@@ -4,7 +4,7 @@
 
 # Laziest image
 
-The image loader to give you full control over image load.
+The image loader to give you full control over image loading.
 
 :heart: ...and reduce all annoying work, of course.
 
